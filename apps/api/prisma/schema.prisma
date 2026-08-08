@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ORGANIZER
+  CUSTOMER
+  GATE
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  SOLD_OUT
+  CANCELLED
+  FINISHED
+}
+
+enum SeatingMode {
+  SEAT_MAP
+  GENERAL_ADMISSION
+}
+
+enum SeatStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         UserRole
+  reservations Reservation[]
+  tickets      Ticket[]
+  events       Event[]       @relation("OrganizerEvents")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Event {
+  id             String      @id @default(cuid())
+  organizerId    String
+  organizer      User        @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  title          String
+  description    String?
+  imageUrl       String?
+  startsAt       DateTime
+  venueName      String
+  address        String?
+  city           String?
+  priceCents     Int
+  currency       String      @default("BRL")
+  capacity       Int
+  seatingMode    SeatingMode @default(SEAT_MAP)
+  status         EventStatus @default(DRAFT)
+  externalSource String?
+  externalId     String?
+  seats          Seat[]
+  reservations   Reservation[]
+  tickets        Ticket[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Seat {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     Event      @relation(fields: [eventId], references: [id])
+  row       String
+  number    Int
+  label     String
+  status    SeatStatus @default(AVAILABLE)
+  tickets   Ticket[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([eventId, row, number])
+}
+
+model Reservation {
+  id         String            @id @default(cuid())
+  eventId    String
+  event      Event             @relation(fields: [eventId], references: [id])
+  customerId String
+  customer   User              @relation(fields: [customerId], references: [id])
+  seatId     String?
+  quantity   Int               @default(1)
+  status     ReservationStatus @default(PENDING)
+  expiresAt  DateTime?
+  payment    Payment?
+  ticket     Ticket?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  reservationId String        @unique
+  reservation   Reservation   @relation(fields: [reservationId], references: [id])
+  amountCents   Int
+  currency      String        @default("BRL")
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Ticket {
+  id            String       @id @default(cuid())
+  eventId       String
+  event         Event        @relation(fields: [eventId], references: [id])
+  customerId    String
+  customer      User         @relation(fields: [customerId], references: [id])
+  reservationId String       @unique
+  reservation   Reservation  @relation(fields: [reservationId], references: [id])
+  seatId        String?
+  seat          Seat?        @relation(fields: [seatId], references: [id])
+  codeHash      String       @unique
+  qrPayload     String
+  shareSlug     String       @unique
+  status        TicketStatus @default(ACTIVE)
+  validatedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([eventId, seatId])
+}

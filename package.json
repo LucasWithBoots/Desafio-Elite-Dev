@@ -1,0 +1,21 @@
+{
+  "name": "desafio-elite-dev",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,magenta \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "npm run dev -w @elite/web",
+    "dev:api": "npm run dev -w @elite/api",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "typescript": "^5.9.2"
+  }
+}
