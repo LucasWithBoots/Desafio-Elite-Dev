@@ -22,6 +22,7 @@ export interface Event {
   id: string;
   title: string;
   description?: string;
+  about?: string;
   imageUrl?: string;
   startsAt: string;
   venueName: string;

@@ -70,6 +70,12 @@ export function EventDetailsPage() {
           <p>{event.address ?? "Endereco confirmado apos a compra"}</p>
         </section>
 
+        <section className="about-card" aria-labelledby="event-about-title">
+          <span className="eyebrow">Sobre</span>
+          <h2 id="event-about-title">Sobre</h2>
+          <p>{event.about ?? event.description}</p>
+        </section>
+
         <section className="ticket-option-section" aria-labelledby="ticket-option-title">
           <div className="section-title-row">
             <div>

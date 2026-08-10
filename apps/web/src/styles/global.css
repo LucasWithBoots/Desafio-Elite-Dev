@@ -1399,6 +1399,7 @@ p {
 .metric-card,
 .validation-state,
 .info-card,
+.about-card,
 .blue-insight-card,
 .payment-card,
 .payment-methods,
@@ -1439,6 +1440,7 @@ p {
 }
 
 .info-card,
+.about-card,
 .blue-insight-card {
   display: grid;
   gap: 8px;
@@ -1458,6 +1460,25 @@ p {
   align-items: center;
   display: flex;
   gap: 8px;
+}
+
+.about-card {
+  align-content: start;
+  gap: 7px;
+}
+
+.about-card .eyebrow {
+  color: #7c566f;
+}
+
+.about-card h2 {
+  font-size: 1.18rem;
+}
+
+.about-card p {
+  color: #4d5147;
+  font-size: 0.92rem;
+  line-height: 1.62;
 }
 
 .blue-insight-card {
