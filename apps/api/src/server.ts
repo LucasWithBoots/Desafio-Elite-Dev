@@ -1,14 +1,11 @@
-import "dotenv/config";
 import { createHttpServer } from "./infra/http/server.js";
-
-const port = Number(process.env.API_PORT ?? 3333);
-const host = process.env.API_HOST ?? "0.0.0.0";
+import { env } from "./shared/env.js";
 
 const server = await createHttpServer();
 
 try {
-  await server.listen({ host, port });
-  server.log.info(`API running at http://${host}:${port}`);
+  await server.listen({ host: env.API_HOST, port: env.API_PORT });
+  server.log.info(`API running at http://${env.API_HOST}:${env.API_PORT}`);
 } catch (error) {
   server.log.error(error);
   process.exit(1);

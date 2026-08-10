@@ -70,7 +70,10 @@ model Event {
   organizer      User        @relation("OrganizerEvents", fields: [organizerId], references: [id])
   title          String
   description    String?
+  about          String?
   imageUrl       String?
+  category       String?
+  genre          String?
   startsAt       DateTime
   venueName      String
   address        String?
