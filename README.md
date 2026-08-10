@@ -6,14 +6,18 @@ Projeto para o Desafio Elite Dev 2026. O objetivo e criar uma plataforma onde or
 
 - Front-end: React, Vite e TypeScript
 - Back-end: Node.js, Fastify e TypeScript
-- Banco de dados planejado: PostgreSQL
-- ORM planejado: Prisma
+- Banco de dados: PostgreSQL
+- ORM: Prisma
 - Organizacao: monorepo com `apps/web`, `apps/api` e `packages/shared`
 
 ## Como Rodar
 
 ```bash
 npm install
+copy .env.example .env
+docker compose up -d postgres
+npm run db:push -w @elite/api
+npm run db:seed -w @elite/api
 npm run dev
 ```
 
@@ -37,13 +41,12 @@ docs/       Decisoes, fluxo de demonstracao e notas de produto
 
 ## Usuarios De Teste
 
-Estes usuarios serao semeados quando o banco for implementado:
+Estes usuarios sao criados pelo seed:
 
 | Papel | Email | Senha |
 | --- | --- | --- |
 | Organizador | organizador@elite.dev | 123456 |
-| Cliente 1 | cliente1@elite.dev | 123456 |
-| Cliente 2 | cliente2@elite.dev | 123456 |
+| Cliente | cliente@elite.dev | 123456 |
 | Portaria | portaria@elite.dev | 123456 |
 
 ## Fluxo De Demonstracao
@@ -60,6 +63,6 @@ Este projeto usa IA como apoio para organizacao, planejamento, geracao de esquel
 
 ## Limitacoes Conhecidas
 
-- A base inicial contem telas placeholder e mocks para prototipacao.
+- O front ainda consome mocks em algumas telas e precisa ser conectado aos endpoints reais.
 - A integracao real com Ticketmaster ainda sera implementada.
-- O banco e as migracoes Prisma ainda precisam ser conectados ao fluxo real.
+- O setup inicial usa `db:push`; migracoes versionadas podem ser adicionadas antes da entrega final.
