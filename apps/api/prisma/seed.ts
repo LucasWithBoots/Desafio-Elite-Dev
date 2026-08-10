@@ -8,8 +8,8 @@ import {
   TicketStatus,
   UserRole,
 } from "@prisma/client";
-import { createHash } from "node:crypto";
 import { hashPassword } from "../src/modules/auth/password.js";
+import { hashTicketPayload } from "../src/modules/tickets/codes.js";
 
 const prisma = new PrismaClient();
 
@@ -168,10 +168,6 @@ function makeSeats(eventId: string, capacity: number) {
   });
 }
 
-function hashTicketCode(value: string) {
-  return createHash("sha256").update(value).digest("hex");
-}
-
 async function main() {
   const passwordHash = hashPassword(demoPassword);
 
@@ -263,7 +259,7 @@ async function main() {
       customerId,
       reservationId: "res_demo_ticket",
       seatId: demoSeatId,
-      codeHash: hashTicketCode(demoTicketPayload),
+      codeHash: hashTicketPayload(demoTicketPayload),
       qrPayload: demoTicketPayload,
       shareSlug: "demo-neon-brush-ticket",
       status: TicketStatus.ACTIVE,

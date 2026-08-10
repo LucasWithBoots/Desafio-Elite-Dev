@@ -3,6 +3,8 @@ import Fastify from "fastify";
 import { registerAuthRoutes } from "../../modules/auth/routes.js";
 import { registerEventRoutes } from "../../modules/events/routes.js";
 import { registerGateValidationRoutes } from "../../modules/gate-validation/routes.js";
+import { registerPaymentRoutes } from "../../modules/payments/routes.js";
+import { registerReservationRoutes } from "../../modules/reservations/routes.js";
 import { registerTicketRoutes } from "../../modules/tickets/routes.js";
 import { HttpError } from "../../shared/http-error.js";
 
@@ -36,6 +38,8 @@ export async function createHttpServer() {
 
   await registerAuthRoutes(server);
   await registerEventRoutes(server);
+  await registerReservationRoutes(server);
+  await registerPaymentRoutes(server);
   await registerTicketRoutes(server);
   await registerGateValidationRoutes(server);
 
