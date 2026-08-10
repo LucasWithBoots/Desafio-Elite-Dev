@@ -13,6 +13,7 @@ import { routes } from "@/shared/constants/routes";
 
 const desktopNavItems = [
   { to: routes.events, label: "Eventos", icon: CalendarDays },
+  { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Meus ingressos", icon: Ticket },
   { to: routes.organizerDashboard, label: "Organizador", icon: ShieldCheck },
   { to: routes.gateValidation, label: "Portaria", icon: QrCode },
@@ -20,7 +21,7 @@ const desktopNavItems = [
 
 const mobileNavItems = [
   { to: routes.events, label: "Home", icon: Home },
-  { to: routes.events, label: "Buscar", icon: Search },
+  { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Tickets", icon: Ticket },
   { to: routes.events, label: "Salvos", icon: Bookmark },
   { to: routes.login, label: "Perfil", icon: UserRound },

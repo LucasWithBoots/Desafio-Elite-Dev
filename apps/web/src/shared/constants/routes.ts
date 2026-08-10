@@ -1,6 +1,7 @@
 export const routes = {
   login: "/login",
   events: "/events",
+  search: "/search",
   eventDetails: "/events/:eventId",
   checkout: "/events/:eventId/checkout",
   myTickets: "/my-tickets",

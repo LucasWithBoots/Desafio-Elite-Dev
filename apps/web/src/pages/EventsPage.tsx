@@ -1,4 +1,11 @@
-import { Bell, Bookmark, ChevronDown, Filter, MapPin, Search, Sparkles } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  ChevronDown,
+  MapPin,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -35,7 +42,11 @@ export function EventsPage() {
           <ChevronDown size={15} aria-hidden="true" />
         </div>
 
-        <button className="icon-button notification-button" type="button" aria-label="Ver notificacoes">
+        <button
+          className="icon-button notification-button"
+          type="button"
+          aria-label="Ver notificacoes"
+        >
           <Bell size={18} aria-hidden="true" />
         </button>
 
@@ -48,30 +59,6 @@ export function EventsPage() {
           <strong>Separamos eventos interessantes para voce</strong>
         </div>
       </header>
-
-      <section className="search-panel" aria-label="Busca de eventos">
-        <label className="search-field">
-          <Search size={17} aria-hidden="true" />
-          <input placeholder="Descobrir eventos" />
-        </label>
-        <div className="filter-rail">
-          <button className="filter-button filter-icon-button" type="button" aria-label="Abrir filtros">
-            <Filter size={17} aria-hidden="true" />
-          </button>
-          <button className="filter-button" type="button">
-            Categoria
-            <ChevronDown size={15} aria-hidden="true" />
-          </button>
-          <button className="filter-button" type="button">
-            Data
-            <ChevronDown size={15} aria-hidden="true" />
-          </button>
-          <button className="filter-button" type="button">
-            Mapa
-            <ChevronDown size={15} aria-hidden="true" />
-          </button>
-        </div>
-      </section>
 
       <div className="category-rail" aria-label="Categorias de eventos">
         {categories.map((category, index) => (
@@ -92,13 +79,22 @@ export function EventsPage() {
               <span className="eyebrow">Em destaque</span>
               <h1 id="featured-title">Proximos eventos</h1>
             </div>
-            <button className="icon-button search-button" type="button" aria-label="Buscar eventos">
+            <button
+              className="icon-button search-button"
+              type="button"
+              aria-label="Buscar eventos"
+            >
               <Search size={18} aria-hidden="true" />
             </button>
           </div>
 
-          <Link className="featured-event-card" to={eventDetailsPath(featuredEvent.id)}>
-            {featuredEvent.imageUrl ? <img src={featuredEvent.imageUrl} alt="" /> : null}
+          <Link
+            className="featured-event-card"
+            to={eventDetailsPath(featuredEvent.id)}
+          >
+            {featuredEvent.imageUrl ? (
+              <img src={featuredEvent.imageUrl} alt="" />
+            ) : null}
             <span className="date-bubble">
               <strong>{getDay(featuredEvent.startsAt)}</strong>
               <small>{getMonth(featuredEvent.startsAt)}</small>
@@ -127,7 +123,10 @@ export function EventsPage() {
           </div>
         </section>
 
-        <section className="recommendation-section" aria-labelledby="recommendation-title">
+        <section
+          className="recommendation-section"
+          aria-labelledby="recommendation-title"
+        >
           <div className="section-title-row">
             <div>
               <span className="eyebrow">Recomendacoes</span>
@@ -140,7 +139,11 @@ export function EventsPage() {
 
           <div className="recommendation-rail">
             {recommendedEvents.map((event) => (
-              <Link className="recommendation-card" key={event.id} to={eventDetailsPath(event.id)}>
+              <Link
+                className="recommendation-card"
+                key={event.id}
+                to={eventDetailsPath(event.id)}
+              >
                 {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
                 <span className="recommendation-save" aria-hidden="true">
                   <Bookmark size={16} />
@@ -152,42 +155,14 @@ export function EventsPage() {
           </div>
         </section>
 
-        <section className="result-list-section" aria-labelledby="result-list-title">
-          <div className="section-title-row">
-            <div>
-              <span className="eyebrow">Busca</span>
-              <h2 id="result-list-title">Resultados em Sao Paulo</h2>
-            </div>
-          </div>
-
-          <div className="result-list">
-            {events.map((event, index) => (
-              <Link className="result-event-row" key={event.id} to={eventDetailsPath(event.id)}>
-                {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                <div>
-                  <strong>{event.title}</strong>
-                  <span>
-                    <MapPin size={13} aria-hidden="true" />
-                    {event.venueName}
-                  </span>
-                  <span>{getListDate(event.startsAt)}</span>
-                  <div className="result-tags">
-                    <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
-                    <span className="app-pill app-pill-pink">
-                      {index === 0 ? "Workshops" : index === 1 ? "Arte" : "Ballet"}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
         <aside className="client-insight-card">
           <Sparkles size={20} aria-hidden="true" />
           <div>
             <strong>Compra rapida, entrada segura</strong>
-            <p>Depois do pagamento, seu ingresso aparece com QR Code e codigo manual.</p>
+            <p>
+              Depois do pagamento, seu ingresso aparece com QR Code e codigo
+              manual.
+            </p>
           </div>
         </aside>
       </div>
@@ -196,7 +171,9 @@ export function EventsPage() {
 }
 
 function getDay(value: string) {
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit" }).format(new Date(value));
+  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit" }).format(
+    new Date(value),
+  );
 }
 
 function getMonth(value: string) {
@@ -210,15 +187,4 @@ function getShortDate(value: string) {
     day: "2-digit",
     month: "2-digit",
   }).format(new Date(value));
-}
-
-function getListDate(value: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-    .format(new Date(value))
-    .replace(".", "");
 }

@@ -10,7 +10,12 @@
   --surface: #ffffff;
   --line: #e8e9df;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
   background: #f2f4e9;
   color: #211f1c;
@@ -40,7 +45,11 @@ input {
 
 .app-shell {
   background:
-    radial-gradient(circle at top left, rgba(226, 255, 0, 0.28), transparent 28rem),
+    radial-gradient(
+      circle at top left,
+      rgba(226, 255, 0, 0.28),
+      transparent 28rem
+    ),
     linear-gradient(180deg, #f2f4e9 0%, #ffffff 42%);
   min-height: 100vh;
 }
@@ -669,7 +678,11 @@ p {
 
 .featured-event-card::after {
   background:
-    linear-gradient(180deg, rgba(13, 16, 14, 0) 32%, rgba(13, 16, 14, 0.88) 100%),
+    linear-gradient(
+      180deg,
+      rgba(13, 16, 14, 0) 32%,
+      rgba(13, 16, 14, 0.88) 100%
+    ),
     linear-gradient(90deg, rgba(255, 109, 58, 0.35), rgba(0, 180, 216, 0.18));
   content: "";
   inset: 0;
@@ -943,8 +956,7 @@ p {
 /* App visual system */
 .app-shell {
   background:
-    linear-gradient(180deg, rgba(223, 255, 0, 0.32), transparent 300px),
-    #f5f6ef;
+    linear-gradient(180deg, rgba(223, 255, 0, 0.32), transparent 300px), #f5f6ef;
 }
 
 .topbar {
@@ -1057,8 +1069,12 @@ p {
 }
 
 .blue-page-header {
-  background:
-    linear-gradient(135deg, var(--blue) 0%, var(--blue) 70%, #82a6ff 100%);
+  background: linear-gradient(
+    135deg,
+    var(--blue) 0%,
+    var(--blue) 70%,
+    #82a6ff 100%
+  );
   color: #ffffff;
 }
 
@@ -1182,6 +1198,117 @@ p {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 2px;
+}
+
+.search-screen {
+  background: #ffffff;
+  gap: 0;
+  margin-left: -14px;
+  margin-right: -14px;
+  max-width: 468px;
+  min-height: calc(100vh - 104px);
+  padding: 0 14px 22px;
+}
+
+.search-header {
+  background: var(--lime);
+  border-radius: 0 0 8px 8px;
+  display: grid;
+  gap: 10px;
+  margin: 0 -14px;
+  overflow: hidden;
+  padding: 48px 14px 14px;
+}
+
+.search-field-large {
+  min-height: 42px;
+}
+
+.search-field-large input::placeholder {
+  color: #9da18f;
+}
+
+.search-filter-rail {
+  margin: 0 -14px;
+  padding: 0 14px;
+}
+
+.search-results-section {
+  display: grid;
+  gap: 12px;
+  padding: 18px 0 0;
+}
+
+.search-results-section h1 {
+  font-size: 1.12rem;
+  line-height: 1.15;
+}
+
+.search-result-list {
+  display: grid;
+  gap: 10px;
+}
+
+.search-result-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 108px minmax(0, 1fr);
+}
+
+.search-result-image {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.search-result-image img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.search-save-button {
+  align-items: center;
+  background: rgba(21, 23, 17, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 50%;
+  color: #ffffff;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 28px;
+}
+
+.search-result-content {
+  align-content: start;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.search-result-content strong {
+  color: var(--ink);
+  font-size: 0.86rem;
+  line-height: 1.16;
+}
+
+.search-result-content > span {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 0.72rem;
+  gap: 5px;
+  line-height: 1.2;
+}
+
+.search-result-content .app-pill {
+  font-size: 0.66rem;
+  min-height: 22px;
+  padding: 3px 7px;
 }
 
 .event-detail-screen {
@@ -1466,7 +1593,11 @@ p {
 .ticket-wallet-art {
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(239, 123, 232, 0.95), rgba(239, 123, 232, 0.42)),
+    linear-gradient(
+      135deg,
+      rgba(239, 123, 232, 0.95),
+      rgba(239, 123, 232, 0.42)
+    ),
     var(--lime);
   border-radius: 8px;
   color: #ffffff;
@@ -1741,6 +1872,31 @@ p {
     border: 1px solid var(--line);
     border-radius: 8px;
     grid-template-columns: 120px 1fr;
+    padding: 10px;
+  }
+
+  .search-screen {
+    background: transparent;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 960px;
+    padding: 0;
+  }
+
+  .search-header {
+    border-radius: 8px;
+    margin: 0;
+    padding-top: 18px;
+  }
+
+  .search-result-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-result-row {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
     padding: 10px;
   }
 

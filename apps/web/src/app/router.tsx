@@ -9,6 +9,7 @@ import { MyTicketsPage } from "@/pages/MyTicketsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OrganizerDashboardPage } from "@/pages/OrganizerDashboardPage";
 import { OrganizerEventFormPage } from "@/pages/OrganizerEventFormPage";
+import { SearchPage } from "@/pages/SearchPage";
 import { TicketDetailsPage } from "@/pages/TicketDetailsPage";
 import { routes } from "@/shared/constants/routes";
 
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to={routes.events} replace /> },
       { path: routes.login, element: <LoginPage /> },
       { path: routes.events, element: <EventsPage /> },
+      { path: routes.search, element: <SearchPage /> },
       { path: routes.eventDetails, element: <EventDetailsPage /> },
       { path: routes.checkout, element: <CheckoutPage /> },
       { path: routes.myTickets, element: <MyTicketsPage /> },
