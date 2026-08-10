@@ -1,31 +1,67 @@
 import type { FastifyInstance } from "fastify";
+import { z } from "zod";
+import { prisma } from "../../infra/db/prisma.js";
+import { badRequest, unauthorized } from "../../shared/http-error.js";
+import { toUserDto } from "./mappers.js";
+import { verifyPassword } from "./password.js";
+import { requireAuthSession } from "./session.js";
+import { signAuthToken } from "./token.js";
 
-const demoUsers = [
-  {
-    id: "usr_organizer",
-    name: "Organizador Demo",
-    email: "organizador@elite.dev",
-    role: "organizer",
-  },
-  {
-    id: "usr_customer_1",
-    name: "Cliente Demo",
-    email: "cliente1@elite.dev",
-    role: "customer",
-  },
-  {
-    id: "usr_gate",
-    name: "Portaria Demo",
-    email: "portaria@elite.dev",
-    role: "gate",
-  },
-];
+const loginBodySchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
 
 export async function registerAuthRoutes(server: FastifyInstance) {
-  server.post("/auth/login", async () => ({
-    token: "demo-token",
-    user: demoUsers[1],
-  }));
+  server.post("/auth/login", async (request, reply) => {
+    const parsedBody = loginBodySchema.safeParse(request.body);
 
-  server.get("/auth/demo-users", async () => demoUsers);
+    if (!parsedBody.success) {
+      throw badRequest("Invalid login payload");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: parsedBody.data.email.toLowerCase() },
+    });
+
+    if (!user || !verifyPassword(parsedBody.data.password, user.passwordHash)) {
+      throw unauthorized("Invalid email or password");
+    }
+
+    const token = signAuthToken({
+      sub: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+
+    return reply.send({
+      token,
+      user: toUserDto(user),
+    });
+  });
+
+  server.get("/auth/me", async (request) => {
+    const session = requireAuthSession(request);
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+    });
+
+    if (!user) {
+      throw unauthorized("User no longer exists");
+    }
+
+    return toUserDto(user);
+  });
+
+  server.get("/auth/demo-users", async () => {
+    const users = await prisma.user.findMany({
+      orderBy: { role: "asc" },
+    });
+
+    return users.map((user) => ({
+      ...toUserDto(user),
+      demoPassword: "123456",
+    }));
+  });
 }
