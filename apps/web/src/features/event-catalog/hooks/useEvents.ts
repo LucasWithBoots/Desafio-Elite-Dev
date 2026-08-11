@@ -1,9 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "../services/eventService";
+import {
+  eventService,
+  type ListEventsFilters,
+} from "../services/eventService";
 
-export function useEvents() {
+export function useEvents(filters?: ListEventsFilters) {
   return useQuery({
-    queryKey: ["events"],
-    queryFn: eventService.listPublishedEvents,
+    queryKey: ["events", filters],
+    queryFn: () => eventService.listPublishedEvents(filters),
   });
 }

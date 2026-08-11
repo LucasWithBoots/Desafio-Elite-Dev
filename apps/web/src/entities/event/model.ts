@@ -27,4 +27,6 @@ export interface Event {
   status: EventStatus;
   externalSource?: ExternalEventSource;
   externalId?: string;
+  category?: string;
+  genre?: string;
 }

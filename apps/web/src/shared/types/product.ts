@@ -5,6 +5,7 @@ export interface CreateEventInput {
   externalId?: string;
   title: string;
   description?: string;
+  about?: string;
   imageUrl?: string;
   date: string;
   time: string;
@@ -15,4 +16,6 @@ export interface CreateEventInput {
   price: number;
   currency: string;
   seatingMode: SeatingMode;
+  category?: string;
+  genre?: string;
 }
