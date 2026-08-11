@@ -8,7 +8,10 @@ const ticketStatusMap = {
 } as const;
 
 type TicketWithRelations = Ticket & {
-  event?: Pick<Event, "id" | "title" | "startsAt" | "venueName">;
+  event?: Pick<
+    Event,
+    "id" | "title" | "startsAt" | "venueName" | "imageUrl" | "priceCents" | "currency"
+  >;
   seat?: Pick<Seat, "id" | "label" | "row" | "number"> | null;
 };
 
@@ -30,6 +33,9 @@ export function toTicketDto(ticket: TicketWithRelations) {
           title: ticket.event.title,
           startsAt: ticket.event.startsAt.toISOString(),
           venueName: ticket.event.venueName,
+          imageUrl: ticket.event.imageUrl ?? undefined,
+          price: ticket.event.priceCents / 100,
+          currency: ticket.event.currency,
         }
       : undefined,
     seat: ticket.seat

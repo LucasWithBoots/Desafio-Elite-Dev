@@ -11,7 +11,7 @@ import { routes } from "@/shared/constants/routes";
 
 interface ProfileAction {
   title: string;
-  description: string;
+  description?: string;
   to: string;
   icon: LucideIcon;
 }
@@ -115,7 +115,7 @@ function ProfileActionLink({ action }: { action: ProfileAction }) {
       </span>
       <span>
         <strong>{action.title}</strong>
-        <small>{action.description}</small>
+        {action.description ? <small>{action.description}</small> : null}
       </span>
       <ChevronRight size={18} aria-hidden="true" />
     </Link>

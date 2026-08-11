@@ -1,4 +1,5 @@
-import { ArrowLeft, CalendarDays, Copy, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, Copy, MapPin, QrCode } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -7,7 +8,7 @@ import { Button } from "@/shared/components/Button";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { routes } from "@/shared/constants/routes";
-import { formatDateTime } from "@/shared/lib/formatters";
+import { formatCurrency } from "@/shared/lib/formatters";
 
 export function TicketDetailsPage() {
   const { ticketId } = useParams();
@@ -41,64 +42,101 @@ export function TicketDetailsPage() {
     setCopyFeedback("Link copiado.");
   }
 
+  const isTicketUsed = ticket.status === "used";
+
   return (
     <section className="app-screen ticket-detail-screen">
       <header className="compact-header lime-compact-header">
         <Link className="round-action" to={routes.myTickets} aria-label="Voltar">
           <ArrowLeft size={18} aria-hidden="true" />
         </Link>
-        <strong>Meu ingresso</strong>
+        <strong>Tickets</strong>
         <span />
       </header>
 
       <div className="ticket-pass">
-        <div className="ticket-pass-hero">
-          <span className="app-pill app-pill-blue">
-            {ticket.seat?.label ? `Assento ${ticket.seat.label}` : "Entrada geral"}
+        <div className="ticket-pass-cover">
+          {ticket.event.imageUrl ? (
+            <img src={ticket.event.imageUrl} alt="" />
+          ) : (
+            <div className="ticket-pass-cover-fallback" aria-hidden="true">
+              <QrCode size={54} />
+            </div>
+          )}
+          <span className={`ticket-status-pill ticket-status-${ticket.status}`}>
+            {getStatusLabel(ticket.status)}
           </span>
-          <h1>{ticket.event.title}</h1>
-          <strong>{getStatusLabel(ticket.status)}</strong>
+          <div className="ticket-pass-cover-copy">
+            <h1>{ticket.event.title}</h1>
+            <p>
+              <MapPin size={14} aria-hidden="true" />
+              {ticket.event.venueName}
+            </p>
+          </div>
         </div>
 
         <div className="ticket-pass-body">
-          <div className="ticket-pass-meta">
-            <p>
-              <MapPin size={15} aria-hidden="true" />
-              {ticket.event.venueName}
-            </p>
-            <p>
-              <CalendarDays size={15} aria-hidden="true" />
-              {formatDateTime(ticket.event.startsAt)}
-            </p>
-          </div>
-
-          <div className="qr-panel ticket-qr-panel">
-            <QRCodeSVG
-              value={ticket.qrPayload}
-              size={152}
-              bgColor="#ffffff"
-              fgColor="#111111"
-              level="M"
-              aria-label="QR Code do ingresso"
+          <div className="ticket-info-grid" aria-label="Informacoes do ingresso">
+            <TicketInfoItem label="Data" value={formatTicketDate(ticket.event.startsAt)} icon={CalendarDays} />
+            <TicketInfoItem label="Horario" value={formatTicketTime(ticket.event.startsAt)} icon={Clock} />
+            <TicketInfoItem
+              label="Valor"
+              value={formatCurrency(ticket.event.price, ticket.event.currency)}
             />
-            <div className="ticket-manual-code">
-              <span>Codigo manual</span>
-              <strong>{ticket.code}</strong>
-            </div>
+            <TicketInfoItem label="Setor" value="Principal" />
+            <TicketInfoItem label="Fila" value={ticket.seat?.row ?? "-"} />
+            <TicketInfoItem label="Assento" value={ticket.seat?.number ? String(ticket.seat.number) : "Livre"} />
           </div>
 
-          <div className="barcode-strip" aria-hidden="true">
-            <span />
+          <div className={`ticket-qr-section${isTicketUsed ? " ticket-qr-section-used" : ""}`}>
+            <div className="ticket-qr-code">
+              <QRCodeSVG
+                value={ticket.qrPayload}
+                size={176}
+                bgColor="#ffffff"
+                fgColor="#111111"
+                level="M"
+                aria-label="QR Code do ingresso"
+              />
+            </div>
+            {isTicketUsed ? (
+              <strong className="ticket-used-message">Ingresso ja utilizado</strong>
+            ) : (
+              <div className="ticket-manual-code">
+                <span>Codigo manual</span>
+                <strong>{ticket.code}</strong>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <Button variant="secondary" onClick={copyShareLink}>
-        <Copy size={18} aria-hidden="true" />
-        Copiar link compartilhavel
-      </Button>
+      {isTicketUsed ? null : (
+        <Button variant="secondary" onClick={copyShareLink}>
+          <Copy size={18} aria-hidden="true" />
+          Copiar link compartilhavel
+        </Button>
+      )}
       {copyFeedback ? <p className="form-feedback">{copyFeedback}</p> : null}
     </section>
+  );
+}
+
+interface TicketInfoItemProps {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+}
+
+function TicketInfoItem({ label, value, icon: Icon }: TicketInfoItemProps) {
+  return (
+    <div className="ticket-info-item">
+      <span>
+        {Icon ? <Icon size={13} aria-hidden="true" /> : null}
+        {label}
+      </span>
+      <strong>{value}</strong>
+    </div>
   );
 }
 
@@ -110,4 +148,18 @@ function getStatusLabel(status: string) {
   } as const;
 
   return labels[status as keyof typeof labels] ?? status;
+}
+
+function formatTicketDate(value: string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  }).format(new Date(value));
+}
+
+function formatTicketTime(value: string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
 }

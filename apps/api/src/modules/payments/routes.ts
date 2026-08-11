@@ -31,6 +31,9 @@ const ticketInclude = {
       title: true,
       startsAt: true,
       venueName: true,
+      imageUrl: true,
+      priceCents: true,
+      currency: true,
     },
   },
   seat: {

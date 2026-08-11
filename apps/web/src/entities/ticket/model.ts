@@ -17,6 +17,9 @@ export interface Ticket {
 }
 
 export interface TicketDetails extends Ticket {
-  event: Pick<Event, "id" | "title" | "startsAt" | "venueName">;
+  event: Pick<
+    Event,
+    "id" | "title" | "startsAt" | "venueName" | "imageUrl" | "price" | "currency"
+  >;
   seat?: Pick<Seat, "id" | "label" | "row" | "number">;
 }
