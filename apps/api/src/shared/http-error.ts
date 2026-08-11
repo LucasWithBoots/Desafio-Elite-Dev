@@ -22,3 +22,7 @@ export function forbidden(message = "Access denied") {
 export function notFound(message = "Resource not found") {
   return new HttpError(404, message);
 }
+
+export function serviceUnavailable(message = "Service unavailable") {
+  return new HttpError(503, message);
+}
