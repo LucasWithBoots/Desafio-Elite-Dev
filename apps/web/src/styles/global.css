@@ -2217,6 +2217,237 @@ button.app-primary-action {
   padding: 12px 16px;
 }
 
+.profile-screen {
+  gap: 12px;
+  max-width: 430px;
+}
+
+.profile-hero {
+  align-items: start;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(239, 123, 232, 0.42), transparent 86px),
+    var(--lime);
+  border-radius: 0 0 8px 8px;
+  display: grid;
+  justify-items: center;
+  margin: 0 -14px 58px;
+  min-height: 138px;
+  padding: 18px;
+  position: relative;
+  text-align: center;
+}
+
+.profile-hero strong {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.profile-avatar {
+  align-items: center;
+  background: #ffffff;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  bottom: -52px;
+  box-shadow:
+    0 18px 42px rgba(21, 23, 17, 0.18),
+    0 0 0 2px var(--pink);
+  color: var(--blue);
+  display: inline-flex;
+  font-size: 2.1rem;
+  font-weight: 950;
+  height: 104px;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 104px;
+}
+
+.profile-identity {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.profile-identity h1 {
+  color: var(--ink);
+  font-size: 1.8rem;
+  line-height: 1.05;
+}
+
+.profile-identity p {
+  color: #3f423a;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-menu-section {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.profile-menu-section h2 {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 950;
+  line-height: 1.1;
+  padding-left: 4px;
+}
+
+.profile-option span:not(.profile-option-icon) {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-option-list {
+  display: grid;
+  gap: 9px;
+}
+
+.profile-option {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 38px minmax(0, 1fr) 24px;
+  min-height: 60px;
+  padding: 8px 12px 8px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.profile-option:hover,
+.profile-option:focus-visible {
+  border-color: var(--lime);
+  box-shadow: inset 0 0 0 1px var(--lime);
+}
+
+.profile-option-icon {
+  align-items: center;
+  background: var(--lime-soft);
+  border-radius: 50%;
+  color: var(--ink);
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.profile-option strong {
+  font-size: 0.98rem;
+  line-height: 1.16;
+}
+
+.profile-option small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.22;
+}
+
+.profile-option-danger {
+  border-color: rgba(239, 123, 232, 0.7);
+}
+
+.profile-option-danger .profile-option-icon {
+  background: #ffe2fb;
+  color: #9d2d8e;
+}
+
+.profile-account-screen {
+  gap: 14px;
+  max-width: 430px;
+}
+
+.profile-account-header {
+  align-items: center;
+  background: var(--lime);
+  border-radius: 0 0 8px 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  margin: 0 -14px 0;
+  min-height: 126px;
+  padding: 18px;
+}
+
+.profile-account-header .round-action {
+  background: rgba(255, 255, 255, 0.72);
+  border: 0;
+  justify-self: start;
+}
+
+.profile-account-header div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-account-header h1 {
+  color: var(--ink);
+  font-size: 1.72rem;
+  line-height: 1.04;
+}
+
+.profile-account-panel {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.profile-readonly-field {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 900;
+  gap: 7px;
+}
+
+.profile-readonly-field span {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.profile-readonly-field svg {
+  color: var(--blue);
+}
+
+.profile-readonly-field input {
+  background: #eff1e9;
+  border: 1px solid #d8dccd;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(21, 23, 17, 0.04);
+  color: #62685f;
+  cursor: not-allowed;
+  font-size: 0.96rem;
+  font-weight: 850;
+  min-height: 48px;
+  overflow: hidden;
+  padding: 0 16px;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.profile-readonly-field input:focus {
+  outline: 2px solid rgba(218, 255, 0, 0.78);
+  outline-offset: 2px;
+}
+
 .payment-hero {
   align-items: center;
   background:
@@ -2907,6 +3138,18 @@ button.app-primary-action {
 
   .checkout-success-copy h1 {
     font-size: 2.45rem;
+  }
+
+  .profile-screen,
+  .profile-account-screen {
+    max-width: 440px;
+  }
+
+  .profile-hero,
+  .profile-account-header {
+    border-radius: 8px;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .payment-methods {

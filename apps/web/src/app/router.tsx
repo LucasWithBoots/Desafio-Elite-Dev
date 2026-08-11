@@ -14,6 +14,8 @@ import { MyTicketsPage } from "@/pages/MyTicketsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OrganizerDashboardPage } from "@/pages/OrganizerDashboardPage";
 import { OrganizerEventFormPage } from "@/pages/OrganizerEventFormPage";
+import { ProfileAccountPage } from "@/pages/ProfileAccountPage";
+import { ProfilePage } from "@/pages/ProfilePage";
 import { SavedEventsPage } from "@/pages/SavedEventsPage";
 import { SearchPage } from "@/pages/SearchPage";
 import { TicketDetailsPage } from "@/pages/TicketDetailsPage";
@@ -25,6 +27,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <RoleHomeRedirect /> },
       { path: routes.login, element: <LoginPage /> },
+      {
+        path: routes.profile,
+        element: (
+          <RoleRoute allowedRoles={["customer", "organizer", "gate"]}>
+            <ProfilePage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.profileAccount,
+        element: (
+          <RoleRoute allowedRoles={["customer", "organizer", "gate"]}>
+            <ProfileAccountPage />
+          </RoleRoute>
+        ),
+      },
       {
         path: routes.events,
         element: (

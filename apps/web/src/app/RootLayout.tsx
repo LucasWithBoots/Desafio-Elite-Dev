@@ -9,6 +9,7 @@ import {
   Ticket,
   UserRound,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { CSSProperties } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getHomePathForRole } from "@/features/auth/components/RoleRoute";
@@ -16,29 +17,36 @@ import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { clearAuthSession } from "@/features/auth/services/authSession";
 import { routes } from "@/shared/constants/routes";
 
-const customerDesktopNavItems = [
+interface NavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+const customerDesktopNavItems: NavItem[] = [
   { to: routes.events, label: "Eventos", icon: CalendarDays },
   { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.savedEvents, label: "Salvos", icon: Bookmark },
   { to: routes.myTickets, label: "Meus ingressos", icon: Ticket },
+  { to: routes.profile, label: "Perfil", icon: UserRound },
 ];
 
-const customerMobileNavItems = [
+const customerMobileNavItems: NavItem[] = [
   { to: routes.events, label: "Home", icon: Home },
   { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Tickets", icon: Ticket },
   { to: routes.savedEvents, label: "Salvos", icon: Bookmark },
-  { to: routes.login, label: "Perfil", icon: UserRound },
+  { to: routes.profile, label: "Perfil", icon: UserRound },
 ];
 
-const organizerNavItems = [
-  { to: routes.organizerDashboard, label: "Perfil", icon: UserRound },
+const organizerNavItems: NavItem[] = [
+  { to: routes.profile, label: "Perfil", icon: UserRound },
   { to: routes.organizerNewEvent, label: "Criar evento", icon: PlusCircle },
 ];
 
-const gateNavItems = [
+const gateNavItems: NavItem[] = [
   { to: routes.gateValidation, label: "Portaria", icon: QrCode },
-  { to: routes.login, label: "Perfil", icon: UserRound },
+  { to: routes.profile, label: "Perfil", icon: UserRound },
 ];
 
 export function RootLayout() {
@@ -50,10 +58,8 @@ export function RootLayout() {
   const shouldHideMobileTabbar =
     /^\/events\/[^/]+\/checkout$/.test(location.pathname) ||
     location.pathname === routes.checkoutSuccess;
-  const mobileItems = session
-    ? navItems.mobile.filter((item) => item.to !== routes.login)
-    : navItems.mobile;
-  const mobileTabCount = mobileItems.length + (session ? 1 : 0);
+  const mobileItems = navItems.mobile;
+  const mobileTabCount = mobileItems.length;
   const mobileTabStyle = {
     "--tab-count": mobileTabCount,
   } as CSSProperties;
@@ -127,12 +133,6 @@ export function RootLayout() {
             </NavLink>
           );
         })}
-        {session ? (
-          <button className="mobile-tab mobile-tab-button" type="button" onClick={handleLogout}>
-            <LogOut size={18} aria-hidden="true" />
-            <span>Sair</span>
-          </button>
-        ) : null}
       </nav>
     </div>
   );

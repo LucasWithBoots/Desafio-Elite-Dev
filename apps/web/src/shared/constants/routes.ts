@@ -1,5 +1,7 @@
 export const routes = {
   login: "/login",
+  profile: "/profile",
+  profileAccount: "/profile/account",
   events: "/events",
   search: "/search",
   savedEvents: "/saved",
