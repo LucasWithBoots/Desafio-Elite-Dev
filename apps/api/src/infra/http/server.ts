@@ -1,6 +1,7 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 import { registerAuthRoutes } from "../../modules/auth/routes.js";
+import { registerTicketmasterCatalogRoutes } from "../../modules/catalog/ticketmaster/routes.js";
 import { registerEventRoutes } from "../../modules/events/routes.js";
 import { registerGateValidationRoutes } from "../../modules/gate-validation/routes.js";
 import { registerPaymentRoutes } from "../../modules/payments/routes.js";
@@ -37,6 +38,7 @@ export async function createHttpServer() {
   }));
 
   await registerAuthRoutes(server);
+  await registerTicketmasterCatalogRoutes(server);
   await registerEventRoutes(server);
   await registerReservationRoutes(server);
   await registerPaymentRoutes(server);
