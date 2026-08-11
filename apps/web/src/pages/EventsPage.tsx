@@ -6,6 +6,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
@@ -15,11 +16,24 @@ import { LoadingState } from "@/shared/components/LoadingState";
 import { eventDetailsPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
-const categories = ["Todos", "Shows", "Festivais", "Ballet", "Teatro"];
+const ALL_CATEGORIES = "Todos";
+
+const categoryLabels: Record<string, string> = {
+  Art: "Arte",
+  "Arts & Theatre": "Arte e teatro",
+  Ballet: "Ballet",
+  Festivals: "Festivais",
+  "Kids & Family": "Familia",
+  Music: "Shows",
+  Sports: "Esportes",
+  Theatre: "Teatro",
+  Workshops: "Workshops",
+};
 
 export function EventsPage() {
   const navigate = useNavigate();
   const session = useAuthSession();
+  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
   const { data: events, isLoading, error } = useEvents();
   const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
@@ -45,10 +59,15 @@ export function EventsPage() {
     );
   }
 
-  const [featuredEvent, ...recommendedEvents] = events;
+  const categories = getAvailableCategories(events);
+  const filteredEvents =
+    selectedCategory === ALL_CATEGORIES
+      ? events
+      : events.filter((event) => getEventCategory(event) === selectedCategory);
+  const [featuredEvent, ...recommendedEvents] = filteredEvents;
   const userFirstName = getFirstName(session?.user.name);
   const userInitial = userFirstName?.charAt(0).toUpperCase() ?? "E";
-  const featuredSaved = isSaved(featuredEvent.id);
+  const featuredSaved = featuredEvent ? isSaved(featuredEvent.id) : false;
 
   function handleSaveClick(eventId: string) {
     if (!canSave) {
@@ -91,86 +110,96 @@ export function EventsPage() {
       </header>
 
       <div className="category-rail" aria-label="Categorias de eventos">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <button
-            className={`category-chip ${index === 0 ? "category-chip-active" : ""}`}
+            className={`category-chip ${
+              selectedCategory === category ? "category-chip-active" : ""
+            }`}
             key={category}
             type="button"
+            onClick={() => setSelectedCategory(category)}
           >
-            {category}
+            {getCategoryLabel(category)}
           </button>
         ))}
       </div>
 
       <div className="client-main-grid">
-        <section className="featured-section" aria-labelledby="featured-title">
-          <div className="section-title-row">
-            <div>
-              <span className="eyebrow">Em destaque</span>
-              <h1 id="featured-title">Proximos eventos</h1>
+        {featuredEvent ? (
+          <section className="featured-section" aria-labelledby="featured-title">
+            <div className="section-title-row">
+              <div>
+                <span className="eyebrow">Em destaque</span>
+                <h1 id="featured-title">Proximos eventos</h1>
+              </div>
+              <Link
+                className="icon-button search-button"
+                to={routes.search}
+                aria-label="Buscar eventos"
+              >
+                <Search size={18} aria-hidden="true" />
+              </Link>
             </div>
-            <Link
-              className="icon-button search-button"
-              to={routes.search}
-              aria-label="Buscar eventos"
-            >
-              <Search size={18} aria-hidden="true" />
-            </Link>
-          </div>
 
-          <article className="featured-event-card">
-            <Link
-              className="featured-event-link"
-              to={eventDetailsPath(featuredEvent.id)}
-            >
-              {featuredEvent.imageUrl ? (
-                <img src={featuredEvent.imageUrl} alt="" />
-              ) : null}
-              <span className="date-bubble">
-                <strong>{getDay(featuredEvent.startsAt)}</strong>
-                <small>{getMonth(featuredEvent.startsAt)}</small>
-              </span>
-              <span className="featured-card-content">
-                <span className="featured-price">
-                  {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+            <article className="featured-event-card">
+              <Link
+                className="featured-event-link"
+                to={eventDetailsPath(featuredEvent.id)}
+              >
+                {featuredEvent.imageUrl ? (
+                  <img src={featuredEvent.imageUrl} alt="" />
+                ) : null}
+                <span className="date-bubble">
+                  <strong>{getDay(featuredEvent.startsAt)}</strong>
+                  <small>{getMonth(featuredEvent.startsAt)}</small>
                 </span>
-                <strong>{featuredEvent.title}</strong>
-                <span>
-                  <MapPin size={14} aria-hidden="true" />
-                  {featuredEvent.venueName}
+                <span className="featured-card-content">
+                  <span className="featured-price">
+                    {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+                  </span>
+                  <strong>{featuredEvent.title}</strong>
+                  <span>
+                    <MapPin size={14} aria-hidden="true" />
+                    {featuredEvent.venueName}
+                  </span>
                 </span>
-              </span>
-            </Link>
-            <button
-              className={`bookmark-button ${featuredSaved ? "save-button-active" : ""}`}
-              type="button"
-              aria-label={
-                featuredSaved
-                  ? `Remover ${featuredEvent.title} dos salvos`
-                  : `Salvar ${featuredEvent.title}`
-              }
-              onClick={(clickEvent) => {
-                clickEvent.preventDefault();
-                clickEvent.stopPropagation();
-                handleSaveClick(featuredEvent.id);
-              }}
-            >
-              <Bookmark
-                size={18}
-                fill={featuredSaved ? "currentColor" : "none"}
-                aria-hidden="true"
-              />
-            </button>
-          </article>
+              </Link>
+              <button
+                className={`bookmark-button ${featuredSaved ? "save-button-active" : ""}`}
+                type="button"
+                aria-label={
+                  featuredSaved
+                    ? `Remover ${featuredEvent.title} dos salvos`
+                    : `Salvar ${featuredEvent.title}`
+                }
+                onClick={(clickEvent) => {
+                  clickEvent.preventDefault();
+                  clickEvent.stopPropagation();
+                  handleSaveClick(featuredEvent.id);
+                }}
+              >
+                <Bookmark
+                  size={18}
+                  fill={featuredSaved ? "currentColor" : "none"}
+                  aria-hidden="true"
+                />
+              </button>
+            </article>
 
-          <div className="carousel-dots" aria-hidden="true">
-            <span />
-            <span className="active" />
-            <span />
-            <span />
-            <span />
-          </div>
-        </section>
+            <div className="carousel-dots" aria-hidden="true">
+              <span />
+              <span className="active" />
+              <span />
+              <span />
+              <span />
+            </div>
+          </section>
+        ) : (
+          <EmptyState
+            title="Nenhum evento nesta categoria"
+            description="Escolha outra categoria para ver novos eventos em destaque."
+          />
+        )}
 
         <section
           className="recommendation-section"
@@ -239,6 +268,26 @@ export function EventsPage() {
       </div>
     </section>
   );
+}
+
+function getAvailableCategories(events: Array<{ category?: string; genre?: string }>) {
+  const categories = new Set<string>();
+
+  events.forEach((event) => {
+    categories.add(getEventCategory(event));
+  });
+
+  return [ALL_CATEGORIES, ...Array.from(categories).sort((first, second) =>
+    getCategoryLabel(first).localeCompare(getCategoryLabel(second), "pt-BR"),
+  )];
+}
+
+function getEventCategory(event: { category?: string; genre?: string }) {
+  return event.category?.trim() || event.genre?.trim() || "Outros";
+}
+
+function getCategoryLabel(category: string) {
+  return categoryLabels[category] ?? category;
 }
 
 function getFirstName(name?: string) {
