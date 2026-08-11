@@ -15,7 +15,10 @@ export function SearchPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const { data: events, isLoading, error } = useEvents({ search, category });
+  const { data: events, isFetching, isLoading, error } = useEvents({
+    search: search.trim(),
+    category,
+  });
   const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
   function handleSaveClick(eventId: string) {
@@ -27,36 +30,6 @@ export function SearchPage() {
     toggleSavedEvent(eventId);
   }
 
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    return (
-      <EmptyState
-        title="Nao foi possivel buscar eventos"
-        description={error instanceof Error ? error.message : "Tente novamente em instantes."}
-      />
-    );
-  }
-
-  if (!events?.length) {
-    return (
-      <section className="app-screen search-screen">
-        <SearchHeader
-          search={search}
-          category={category}
-          onSearchChange={setSearch}
-          onCategoryChange={setCategory}
-        />
-        <EmptyState
-          title="Nenhum resultado encontrado"
-          description="Tente buscar por outro nome, data ou categoria."
-        />
-      </section>
-    );
-  }
-
   return (
     <section className="app-screen search-screen">
       <SearchHeader
@@ -66,65 +39,86 @@ export function SearchPage() {
         onCategoryChange={setCategory}
       />
 
-      <section className="search-results-section" aria-labelledby="search-results-title">
-        <h1 id="search-results-title">Resultados em Sao Paulo</h1>
+      {error ? (
+        <EmptyState
+          title="Nao foi possivel buscar eventos"
+          description={error instanceof Error ? error.message : "Tente novamente em instantes."}
+        />
+      ) : isLoading ? (
+        <LoadingState />
+      ) : !events?.length ? (
+        <EmptyState
+          title="Nenhum resultado encontrado"
+          description="Tente buscar por outro nome, data ou categoria."
+        />
+      ) : (
+        <section className="search-results-section" aria-labelledby="search-results-title">
+          <div className="search-results-title-row">
+            <h1 id="search-results-title">Resultados em Sao Paulo</h1>
+            {isFetching ? (
+              <span className="search-updating" aria-live="polite">
+                Atualizando
+              </span>
+            ) : null}
+          </div>
 
-        <div className="search-result-list">
-          {events.map((event, index) => {
-            const saved = isSaved(event.id);
+          <div className="search-result-list">
+            {events.map((event, index) => {
+              const saved = isSaved(event.id);
 
-            return (
-              <article className="search-result-row" key={event.id}>
-                <div className="search-result-image">
-                  <Link
-                    className="search-result-image-link"
-                    to={eventDetailsPath(event.id)}
-                    aria-label={`Abrir ${event.title}`}
-                  >
-                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                  </Link>
-                  <button
-                    className={`search-save-button ${saved ? "save-button-active" : ""}`}
-                    type="button"
-                    aria-label={
-                      saved ? `Remover ${event.title} dos salvos` : `Salvar ${event.title}`
-                    }
-                    onClick={(clickEvent) => {
-                      clickEvent.preventDefault();
-                      clickEvent.stopPropagation();
-                      handleSaveClick(event.id);
-                    }}
-                  >
-                    <Bookmark
-                      size={15}
-                      fill={saved ? "currentColor" : "none"}
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
-
-                <Link
-                  className="search-result-content"
-                  to={eventDetailsPath(event.id)}
-                >
-                  <strong>{event.title}</strong>
-                  <span>
-                    <MapPin size={13} aria-hidden="true" />
-                    {event.venueName}
-                  </span>
-                  <span>{formatSearchDate(event.startsAt)}</span>
-                  <div className="result-tags">
-                    <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
-                    <span className="app-pill app-pill-pink">
-                      {event.category ?? event.genre ?? categories[index % categories.length]}
-                    </span>
+              return (
+                <article className="search-result-row" key={event.id}>
+                  <div className="search-result-image">
+                    <Link
+                      className="search-result-image-link"
+                      to={eventDetailsPath(event.id)}
+                      aria-label={`Abrir ${event.title}`}
+                    >
+                      {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                    </Link>
+                    <button
+                      className={`search-save-button ${saved ? "save-button-active" : ""}`}
+                      type="button"
+                      aria-label={
+                        saved ? `Remover ${event.title} dos salvos` : `Salvar ${event.title}`
+                      }
+                      onClick={(clickEvent) => {
+                        clickEvent.preventDefault();
+                        clickEvent.stopPropagation();
+                        handleSaveClick(event.id);
+                      }}
+                    >
+                      <Bookmark
+                        size={15}
+                        fill={saved ? "currentColor" : "none"}
+                        aria-hidden="true"
+                      />
+                    </button>
                   </div>
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+
+                  <Link
+                    className="search-result-content"
+                    to={eventDetailsPath(event.id)}
+                  >
+                    <strong>{event.title}</strong>
+                    <span>
+                      <MapPin size={13} aria-hidden="true" />
+                      {event.venueName}
+                    </span>
+                    <span>{formatSearchDate(event.startsAt)}</span>
+                    <div className="result-tags">
+                      <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
+                      <span className="app-pill app-pill-pink">
+                        {event.category ?? event.genre ?? categories[index % categories.length]}
+                      </span>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

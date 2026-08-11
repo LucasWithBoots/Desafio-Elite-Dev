@@ -1284,9 +1284,33 @@ p {
   padding: 18px 0 0;
 }
 
+.search-screen > .empty-state,
+.search-screen > .loading-state {
+  margin-top: 18px;
+  min-height: 140px;
+}
+
+.search-results-title-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .search-results-section h1 {
   font-size: 1.12rem;
   line-height: 1.15;
+}
+
+.search-updating {
+  background: var(--lime-soft);
+  border: 1px solid rgba(21, 23, 17, 0.1);
+  border-radius: 999px;
+  color: var(--ink);
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 5px 9px;
 }
 
 .search-result-list {

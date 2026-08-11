@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   eventService,
   type ListEventsFilters,
@@ -8,5 +8,6 @@ export function useEvents(filters?: ListEventsFilters) {
   return useQuery({
     queryKey: ["events", filters],
     queryFn: () => eventService.listPublishedEvents(filters),
+    placeholderData: keepPreviousData,
   });
 }
