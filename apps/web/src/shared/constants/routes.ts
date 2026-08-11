@@ -5,6 +5,7 @@ export const routes = {
   savedEvents: "/saved",
   eventDetails: "/events/:eventId",
   checkout: "/events/:eventId/checkout",
+  checkoutSuccess: "/checkout/success",
   myTickets: "/my-tickets",
   ticketDetails: "/my-tickets/:ticketId",
   organizerDashboard: "/organizer",

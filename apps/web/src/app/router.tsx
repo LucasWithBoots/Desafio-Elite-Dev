@@ -5,6 +5,7 @@ import {
   RoleRoute,
 } from "@/features/auth/components/RoleRoute";
 import { CheckoutPage } from "@/pages/CheckoutPage";
+import { CheckoutSuccessPage } from "@/pages/CheckoutSuccessPage";
 import { EventDetailsPage } from "@/pages/EventDetailsPage";
 import { EventsPage } from "@/pages/EventsPage";
 import { GateValidationPage } from "@/pages/GateValidationPage";
@@ -61,6 +62,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleRoute allowedRoles={["customer"]}>
             <CheckoutPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.checkoutSuccess,
+        element: (
+          <RoleRoute allowedRoles={["customer"]}>
+            <CheckoutSuccessPage />
           </RoleRoute>
         ),
       },

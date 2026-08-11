@@ -10,7 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 import type { CSSProperties } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getHomePathForRole } from "@/features/auth/components/RoleRoute";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { clearAuthSession } from "@/features/auth/services/authSession";
@@ -43,9 +43,13 @@ const gateNavItems = [
 
 export function RootLayout() {
   const session = useAuthSession();
+  const location = useLocation();
   const navigate = useNavigate();
   const navItems = getNavItems(session?.user.role);
   const homePath = getHomePathForRole(session?.user.role);
+  const shouldHideMobileTabbar =
+    /^\/events\/[^/]+\/checkout$/.test(location.pathname) ||
+    location.pathname === routes.checkoutSuccess;
   const mobileItems = session
     ? navItems.mobile.filter((item) => item.to !== routes.login)
     : navItems.mobile;
@@ -96,11 +100,15 @@ export function RootLayout() {
         </nav>
       </header>
 
-      <main className="page-shell">
+      <main className={`page-shell ${shouldHideMobileTabbar ? "page-shell-immersive" : ""}`}>
         <Outlet />
       </main>
 
-      <nav className="mobile-tabbar" aria-label="Navegacao principal" style={mobileTabStyle}>
+      <nav
+        className={`mobile-tabbar ${shouldHideMobileTabbar ? "mobile-tabbar-hidden" : ""}`}
+        aria-label="Navegacao principal"
+        style={mobileTabStyle}
+      >
         {mobileItems.map((item) => {
           const Icon = item.icon;
           const exactMatch = item.to === routes.organizerDashboard;

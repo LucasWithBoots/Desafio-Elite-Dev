@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Sparkles, Ticket, UsersRound, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Sparkles, UsersRound, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useEvent } from "@/features/event-catalog/hooks/useEvent";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -76,27 +76,19 @@ export function EventDetailsPage() {
           <p>{event.about ?? event.description}</p>
         </section>
 
-        <section className="ticket-option-section" aria-labelledby="ticket-option-title">
-          <div className="section-title-row">
-            <div>
-              <span className="eyebrow">Ingressos</span>
-              <h2 id="ticket-option-title">Escolha seu ingresso</h2>
-            </div>
-            <span className="app-pill">Assento marcado</span>
-          </div>
-
-          <div className="ticket-option-grid">
-            <article className="ticket-option ticket-option-active">
-              <Ticket size={18} aria-hidden="true" />
-              <strong>1 ingresso</strong>
-              <span>{formatCurrency(event.price, event.currency)}</span>
-            </article>
-            <article className="ticket-option ticket-option-muted">
-              <Ticket size={18} aria-hidden="true" />
-              <strong>2 ingressos</strong>
-              <span>{formatCurrency(event.price * 2, event.currency)}</span>
-            </article>
-          </div>
+        <section className="ticket-entry-card" aria-labelledby="ticket-option-title">
+          <span className="eyebrow">Ingressos</span>
+          <h2 id="ticket-option-title">
+            {event.seatingMode === "seat-map"
+              ? "Escolha seus assentos"
+              : "Escolha a quantidade"}
+          </h2>
+          <p>
+            {event.seatingMode === "seat-map"
+              ? "Selecione quantos lugares quiser no mapa antes de pagar."
+              : "Defina quantos ingressos deseja antes de finalizar."}
+          </p>
+          <strong>{formatCurrency(event.price, event.currency)} por ingresso</strong>
         </section>
 
         <section className="blue-insight-card">
@@ -108,7 +100,7 @@ export function EventDetailsPage() {
         </section>
 
         <Link className="app-primary-action" to={checkoutPath(event.id)}>
-          Comprar 1 ingresso
+          {event.seatingMode === "seat-map" ? "Escolher assentos" : "Comprar ingressos"}
         </Link>
       </div>
     </section>
