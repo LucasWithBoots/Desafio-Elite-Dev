@@ -138,7 +138,7 @@ input {
   box-shadow: 0 16px 40px rgba(33, 31, 28, 0.18);
   display: grid;
   gap: 4px;
-  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  grid-template-columns: repeat(var(--tab-count, 5), minmax(0, 1fr));
   left: 14px;
   margin: 0 auto;
   max-width: 420px;

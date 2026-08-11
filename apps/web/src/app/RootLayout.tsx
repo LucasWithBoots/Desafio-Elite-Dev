@@ -9,6 +9,7 @@ import {
   Ticket,
   UserRound,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getHomePathForRole } from "@/features/auth/components/RoleRoute";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
@@ -47,6 +48,10 @@ export function RootLayout() {
   const mobileItems = session
     ? navItems.mobile.filter((item) => item.to !== routes.login)
     : navItems.mobile;
+  const mobileTabCount = mobileItems.length + (session ? 1 : 0);
+  const mobileTabStyle = {
+    "--tab-count": mobileTabCount,
+  } as CSSProperties;
 
   function handleLogout() {
     clearAuthSession();
@@ -94,7 +99,7 @@ export function RootLayout() {
         <Outlet />
       </main>
 
-      <nav className="mobile-tabbar" aria-label="Navegacao principal">
+      <nav className="mobile-tabbar" aria-label="Navegacao principal" style={mobileTabStyle}>
         {mobileItems.map((item) => {
           const Icon = item.icon;
           const isEventsShortcut = item.to === routes.events && item.label !== "Home";
