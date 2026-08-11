@@ -1,4 +1,5 @@
 import { Bookmark, ChevronDown, Filter, MapPin, Search } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -7,44 +8,51 @@ import { eventDetailsPath } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 const filters = ["Categoria", "Data", "Mapa", "Preco"];
-const tags = ["Workshops", "Arte", "Kids & Family", "Exposicao", "Festival", "Teatro"];
+const categories = ["All", "Music", "Art", "Workshops", "Kids & Family", "Theatre"];
 
 export function SearchPage() {
-  const { data: events, isLoading } = useEvents();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const { data: events, isLoading, error } = useEvents({ search, category });
 
   if (isLoading) {
     return <LoadingState />;
   }
 
-  if (!events?.length) {
+  if (error) {
     return (
       <EmptyState
-        title="Nenhum resultado encontrado"
-        description="Tente buscar por outro nome, data ou categoria."
+        title="Nao foi possivel buscar eventos"
+        description={error instanceof Error ? error.message : "Tente novamente em instantes."}
       />
+    );
+  }
+
+  if (!events?.length) {
+    return (
+      <section className="app-screen search-screen">
+        <SearchHeader
+          search={search}
+          category={category}
+          onSearchChange={setSearch}
+          onCategoryChange={setCategory}
+        />
+        <EmptyState
+          title="Nenhum resultado encontrado"
+          description="Tente buscar por outro nome, data ou categoria."
+        />
+      </section>
     );
   }
 
   return (
     <section className="app-screen search-screen">
-      <header className="search-header">
-        <label className="search-field search-field-large">
-          <Search size={17} aria-hidden="true" />
-          <input aria-label="Buscar eventos" placeholder="Descobrir" />
-        </label>
-
-        <div className="filter-rail search-filter-rail" aria-label="Filtros de busca">
-          <button className="filter-button filter-icon-button" type="button" aria-label="Abrir filtros">
-            <Filter size={17} aria-hidden="true" />
-          </button>
-          {filters.map((filter) => (
-            <button className="filter-button" key={filter} type="button">
-              {filter}
-              <ChevronDown size={15} aria-hidden="true" />
-            </button>
-          ))}
-        </div>
-      </header>
+      <SearchHeader
+        search={search}
+        category={category}
+        onSearchChange={setSearch}
+        onCategoryChange={setCategory}
+      />
 
       <section className="search-results-section" aria-labelledby="search-results-title">
         <h1 id="search-results-title">Resultados em Sao Paulo</h1>
@@ -68,7 +76,9 @@ export function SearchPage() {
                 <span>{formatSearchDate(event.startsAt)}</span>
                 <div className="result-tags">
                   <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
-                  <span className="app-pill app-pill-pink">{tags[index % tags.length]}</span>
+                  <span className="app-pill app-pill-pink">
+                    {event.category ?? event.genre ?? categories[index % categories.length]}
+                  </span>
                 </div>
               </div>
             </Link>
@@ -76,6 +86,59 @@ export function SearchPage() {
         </div>
       </section>
     </section>
+  );
+}
+
+interface SearchHeaderProps {
+  search: string;
+  category: string;
+  onSearchChange: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+}
+
+function SearchHeader({
+  search,
+  category,
+  onSearchChange,
+  onCategoryChange,
+}: SearchHeaderProps) {
+  return (
+    <header className="search-header">
+      <label className="search-field search-field-large">
+        <Search size={17} aria-hidden="true" />
+        <input
+          aria-label="Buscar eventos"
+          placeholder="Descobrir"
+          value={search}
+          onChange={(event) => onSearchChange(event.target.value)}
+        />
+      </label>
+
+      <div className="filter-rail search-filter-rail" aria-label="Filtros de busca">
+        <button className="filter-button filter-icon-button" type="button" aria-label="Abrir filtros">
+          <Filter size={17} aria-hidden="true" />
+        </button>
+        {filters.map((filter) => (
+          <button className="filter-button" key={filter} type="button">
+            {filter}
+            <ChevronDown size={15} aria-hidden="true" />
+          </button>
+        ))}
+      </div>
+
+      <div className="category-rail compact-category-rail" aria-label="Categorias">
+        {categories.map((item) => (
+          <button
+            className={`category-chip ${category === item ? "category-chip-active" : ""}`}
+            key={item}
+            type="button"
+            onClick={() => onCategoryChange(item)}
+          >
+            {item === "All" ? "Todos" : item}
+          </button>
+        ))}
+      </div>
+    </header>
   );
 }
 

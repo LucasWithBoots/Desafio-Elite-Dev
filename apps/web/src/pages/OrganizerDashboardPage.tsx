@@ -1,8 +1,55 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, CalendarDays, Plus, Ticket, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { eventManagementService } from "@/features/event-management/services/eventManagementService";
+import { EmptyState } from "@/shared/components/EmptyState";
+import { LoadingState } from "@/shared/components/LoadingState";
 import { routes } from "@/shared/constants/routes";
 
 export function OrganizerDashboardPage() {
+  const queryClient = useQueryClient();
+  const { data: events, isLoading, error } = useQuery({
+    queryKey: ["organizer", "events"],
+    queryFn: eventManagementService.listOrganizerEvents,
+  });
+  const publishMutation = useMutation({
+    mutationFn: eventManagementService.publishEvent,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["organizer", "events"] }),
+  });
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        title="Entre como organizador"
+        description="Use o perfil de organizador para ver e gerenciar seus eventos."
+        action={
+          <Link className="button button-primary" to={routes.login}>
+            Entrar
+          </Link>
+        }
+      />
+    );
+  }
+
+  const publishedEvents = events?.filter((event) => event.status === "published") ?? [];
+  const soldTickets =
+    events?.reduce(
+      (total, event) => total + Math.max(event.capacity - event.availableTickets, 0),
+      0,
+    ) ?? 0;
+  const occupancy =
+    events?.length && events.reduce((total, event) => total + event.capacity, 0) > 0
+      ? Math.round(
+          (soldTickets /
+            events.reduce((total, event) => total + event.capacity, 0)) *
+            100,
+        )
+      : 0;
+
   return (
     <section className="app-screen organizer-screen">
       <header className="blue-page-header">
@@ -20,33 +67,58 @@ export function OrganizerDashboardPage() {
       <div className="metric-grid">
         <article className="metric-card">
           <CalendarDays size={20} aria-hidden="true" />
-          <strong>3</strong>
+          <strong>{publishedEvents.length}</strong>
           <span>eventos publicados</span>
         </article>
         <article className="metric-card">
           <Ticket size={20} aria-hidden="true" />
-          <strong>157</strong>
+          <strong>{soldTickets}</strong>
           <span>ingressos vendidos</span>
         </article>
         <article className="metric-card">
           <TrendingUp size={20} aria-hidden="true" />
-          <strong>71%</strong>
+          <strong>{occupancy}%</strong>
           <span>ocupacao media</span>
         </article>
       </div>
 
       <div className="organizer-event-list">
-        {["Neon Brush", "Glass House", "Dawn Ballet"].map((event, index) => (
-          <article className="organizer-event-row" key={event}>
+        {events?.map((event) => (
+          <article className="organizer-event-row" key={event.id}>
             <div>
-              <span className="app-pill">{index === 0 ? "Hoje" : "Publicado"}</span>
-              <strong>{event}</strong>
-              <p>{index === 0 ? "84/120 lugares disponiveis" : "Vendas abertas"}</p>
+              <span className="app-pill">{getStatusLabel(event.status)}</span>
+              <strong>{event.title}</strong>
+              <p>
+                {event.availableTickets}/{event.capacity} lugares disponiveis
+              </p>
             </div>
-            <BadgeCheck size={22} aria-hidden="true" />
+            {event.status === "draft" ? (
+              <button
+                className="icon-text-button"
+                type="button"
+                disabled={publishMutation.isPending}
+                onClick={() => publishMutation.mutate(event.id)}
+              >
+                Publicar
+              </button>
+            ) : (
+              <BadgeCheck size={22} aria-hidden="true" />
+            )}
           </article>
         ))}
       </div>
     </section>
   );
+}
+
+function getStatusLabel(status: string) {
+  const labels = {
+    draft: "Rascunho",
+    published: "Publicado",
+    "sold-out": "Esgotado",
+    cancelled: "Cancelado",
+    finished: "Finalizado",
+  } as const;
+
+  return labels[status as keyof typeof labels] ?? status;
 }

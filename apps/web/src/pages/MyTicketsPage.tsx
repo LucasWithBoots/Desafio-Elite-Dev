@@ -1,8 +1,41 @@
 import { CalendarDays, MapPin, QrCode, Ticket } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ticketDetailsPath } from "@/shared/constants/routes";
+import { useMyTickets } from "@/features/tickets/hooks/useMyTickets";
+import { EmptyState } from "@/shared/components/EmptyState";
+import { LoadingState } from "@/shared/components/LoadingState";
+import { routes, ticketDetailsPath } from "@/shared/constants/routes";
+import { formatDateTime } from "@/shared/lib/formatters";
 
 export function MyTicketsPage() {
+  const { data: tickets, isLoading, error } = useMyTickets();
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        title="Entre para ver seus ingressos"
+        description="Use o perfil de cliente para acessar a carteira de ingressos."
+        action={
+          <Link className="button button-primary" to={routes.login}>
+            Entrar
+          </Link>
+        }
+      />
+    );
+  }
+
+  if (!tickets?.length) {
+    return (
+      <EmptyState
+        title="Nenhum ingresso ainda"
+        description="Quando uma compra for aprovada, o ingresso aparece aqui."
+      />
+    );
+  }
+
   return (
     <section className="app-screen my-tickets-screen">
       <header className="lime-page-header">
@@ -12,44 +45,41 @@ export function MyTicketsPage() {
       </header>
 
       <div className="ticket-list">
-        <Link className="ticket-wallet-card" to={ticketDetailsPath("tck_demo")}>
-          <div className="ticket-wallet-art">
-            <Ticket size={26} aria-hidden="true" />
-          </div>
-          <div>
-            <span className="app-pill">Ativo</span>
-            <h2>Neon Brush</h2>
-            <p>
-              <CalendarDays size={14} aria-hidden="true" />
-              02 nov. 2026, 21:00
-            </p>
-            <p>
-              <MapPin size={14} aria-hidden="true" />
-              Novotel Music City
-            </p>
-          </div>
-          <QrCode size={44} aria-hidden="true" />
-        </Link>
-
-        <article className="ticket-wallet-card ticket-wallet-card-muted">
-          <div className="ticket-wallet-art ticket-wallet-art-blue">
-            <Ticket size={26} aria-hidden="true" />
-          </div>
-          <div>
-            <span className="app-pill app-pill-blue">Compartilhado</span>
-            <h2>Glass House</h2>
-            <p>
-              <CalendarDays size={14} aria-hidden="true" />
-              12 dez. 2026, 19:30
-            </p>
-            <p>
-              <MapPin size={14} aria-hidden="true" />
-              Teatro Luz
-            </p>
-          </div>
-          <QrCode size={44} aria-hidden="true" />
-        </article>
+        {tickets.map((ticket) => (
+          <Link
+            className={`ticket-wallet-card ${ticket.status !== "active" ? "ticket-wallet-card-muted" : ""}`}
+            key={ticket.id}
+            to={ticketDetailsPath(ticket.id)}
+          >
+            <div className="ticket-wallet-art">
+              <Ticket size={26} aria-hidden="true" />
+            </div>
+            <div>
+              <span className="app-pill">{getStatusLabel(ticket.status)}</span>
+              <h2>{ticket.event.title}</h2>
+              <p>
+                <CalendarDays size={14} aria-hidden="true" />
+                {formatDateTime(ticket.event.startsAt)}
+              </p>
+              <p>
+                <MapPin size={14} aria-hidden="true" />
+                {ticket.event.venueName}
+              </p>
+            </div>
+            <QrCode size={44} aria-hidden="true" />
+          </Link>
+        ))}
       </div>
     </section>
   );
+}
+
+function getStatusLabel(status: string) {
+  const labels = {
+    active: "Ativo",
+    used: "Utilizado",
+    cancelled: "Cancelado",
+  } as const;
+
+  return labels[status as keyof typeof labels] ?? status;
 }

@@ -1849,6 +1849,145 @@ p {
   padding: 10px;
 }
 
+.form-feedback {
+  color: #5c554d;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.stacked-form {
+  display: grid;
+  gap: 12px;
+}
+
+.seat-grid-dynamic {
+  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.quantity-picker {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 48px 1fr 48px;
+  padding: 12px;
+}
+
+.quantity-picker button {
+  background: var(--lime);
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 1.3rem;
+  font-weight: 900;
+  min-height: 48px;
+}
+
+.quantity-picker strong {
+  color: var(--blue);
+  font-size: 2rem;
+  text-align: center;
+}
+
+.catalog-result-list {
+  display: grid;
+  gap: 10px;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.catalog-result-card {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 72px 1fr auto;
+  padding: 10px;
+}
+
+.catalog-result-card img {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  height: 72px;
+  object-fit: cover;
+  width: 72px;
+}
+
+.catalog-result-card div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.catalog-result-card strong,
+.catalog-result-card span {
+  overflow-wrap: anywhere;
+}
+
+.catalog-result-card span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.icon-text-button {
+  background: var(--lime);
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.compact-category-rail {
+  margin-top: 10px;
+}
+
+.scanner-frame {
+  overflow: hidden;
+  position: relative;
+}
+
+.scanner-frame video {
+  border-radius: 8px;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.scanner-frame video[srcObject] + svg {
+  opacity: 0.12;
+}
+
+.validation-state-invalid,
+.validation-state-already-used,
+.validation-state-wrong-event {
+  background: #fff3f8;
+  border-color: #f2b5e9;
+}
+
+.validation-state-invalid strong,
+.validation-state-already-used strong,
+.validation-state-wrong-event strong {
+  color: #9c2d86;
+}
+
+.gate-login-link {
+  justify-self: center;
+}
+
 @media (min-width: 821px) {
   h1 {
     font-size: 3rem;

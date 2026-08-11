@@ -10,16 +10,25 @@ import { Link } from "react-router-dom";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
-import { eventDetailsPath } from "@/shared/constants/routes";
+import { eventDetailsPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 const categories = ["Todos", "Shows", "Festivais", "Ballet", "Teatro"];
 
 export function EventsPage() {
-  const { data: events, isLoading } = useEvents();
+  const { data: events, isLoading, error } = useEvents();
 
   if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        title="Nao foi possivel carregar os eventos"
+        description={error instanceof Error ? error.message : "Tente novamente em instantes."}
+      />
+    );
   }
 
   if (!events?.length) {
@@ -79,13 +88,13 @@ export function EventsPage() {
               <span className="eyebrow">Em destaque</span>
               <h1 id="featured-title">Proximos eventos</h1>
             </div>
-            <button
+            <Link
               className="icon-button search-button"
-              type="button"
+              to={routes.search}
               aria-label="Buscar eventos"
             >
               <Search size={18} aria-hidden="true" />
-            </button>
+            </Link>
           </div>
 
           <Link
@@ -132,7 +141,7 @@ export function EventsPage() {
               <span className="eyebrow">Recomendacoes</span>
               <h2 id="recommendation-title">Para sua semana</h2>
             </div>
-            <Link className="text-link" to="/events">
+            <Link className="text-link" to={routes.search}>
               Ver todos
             </Link>
           </div>
