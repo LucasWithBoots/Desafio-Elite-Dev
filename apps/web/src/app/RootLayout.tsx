@@ -2,24 +2,24 @@ import {
   Bookmark,
   CalendarDays,
   Home,
+  PlusCircle,
   QrCode,
   Search,
-  ShieldCheck,
   Ticket,
   UserRound,
 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
+import { getHomePathForRole } from "@/features/auth/components/RoleRoute";
+import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { routes } from "@/shared/constants/routes";
 
-const desktopNavItems = [
+const customerDesktopNavItems = [
   { to: routes.events, label: "Eventos", icon: CalendarDays },
   { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Meus ingressos", icon: Ticket },
-  { to: routes.organizerDashboard, label: "Organizador", icon: ShieldCheck },
-  { to: routes.gateValidation, label: "Portaria", icon: QrCode },
 ];
 
-const mobileNavItems = [
+const customerMobileNavItems = [
   { to: routes.events, label: "Home", icon: Home },
   { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Tickets", icon: Ticket },
@@ -27,20 +27,34 @@ const mobileNavItems = [
   { to: routes.login, label: "Perfil", icon: UserRound },
 ];
 
+const organizerNavItems = [
+  { to: routes.organizerDashboard, label: "Perfil", icon: UserRound },
+  { to: routes.organizerNewEvent, label: "Criar evento", icon: PlusCircle },
+];
+
+const gateNavItems = [
+  { to: routes.gateValidation, label: "Portaria", icon: QrCode },
+  { to: routes.login, label: "Perfil", icon: UserRound },
+];
+
 export function RootLayout() {
+  const session = useAuthSession();
+  const navItems = getNavItems(session?.user.role);
+  const homePath = getHomePathForRole(session?.user.role);
+
   return (
     <div className="app-shell">
       <header className="topbar">
-        <NavLink to={routes.events} className="brand" aria-label="Elite Events">
+        <NavLink to={homePath} className="brand" aria-label="Elite Events">
           <span className="brand-mark">E</span>
           <span>
             <strong>Elite Events</strong>
-            <small>Eventos, ingressos e portaria</small>
+            <small>{getBrandSubtitle(session?.user.role)}</small>
           </span>
         </NavLink>
 
         <nav className="main-nav" aria-label="Navegacao principal">
-          {desktopNavItems.map((item) => {
+          {navItems.desktop.map((item) => {
             const Icon = item.icon;
 
             return (
@@ -57,8 +71,8 @@ export function RootLayout() {
         <Outlet />
       </main>
 
-      <nav className="mobile-tabbar" aria-label="Navegacao do cliente">
-        {mobileNavItems.map((item) => {
+      <nav className="mobile-tabbar" aria-label="Navegacao principal">
+        {navItems.mobile.map((item) => {
           const Icon = item.icon;
           const isEventsShortcut = item.to === routes.events && item.label !== "Home";
 
@@ -78,4 +92,37 @@ export function RootLayout() {
       </nav>
     </div>
   );
+}
+
+function getNavItems(role?: string) {
+  if (role === "organizer") {
+    return {
+      desktop: organizerNavItems,
+      mobile: organizerNavItems,
+    };
+  }
+
+  if (role === "gate") {
+    return {
+      desktop: gateNavItems,
+      mobile: gateNavItems,
+    };
+  }
+
+  return {
+    desktop: customerDesktopNavItems,
+    mobile: customerMobileNavItems,
+  };
+}
+
+function getBrandSubtitle(role?: string) {
+  if (role === "organizer") {
+    return "Perfil e criacao de eventos";
+  }
+
+  if (role === "gate") {
+    return "Validacao de ingressos";
+  }
+
+  return "Eventos, ingressos e portaria";
 }

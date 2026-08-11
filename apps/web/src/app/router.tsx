@@ -1,5 +1,9 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { RootLayout } from "./RootLayout";
+import {
+  RoleHomeRedirect,
+  RoleRoute,
+} from "@/features/auth/components/RoleRoute";
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { EventDetailsPage } from "@/pages/EventDetailsPage";
 import { EventsPage } from "@/pages/EventsPage";
@@ -17,17 +21,80 @@ export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { index: true, element: <Navigate to={routes.events} replace /> },
+      { index: true, element: <RoleHomeRedirect /> },
       { path: routes.login, element: <LoginPage /> },
-      { path: routes.events, element: <EventsPage /> },
-      { path: routes.search, element: <SearchPage /> },
-      { path: routes.eventDetails, element: <EventDetailsPage /> },
-      { path: routes.checkout, element: <CheckoutPage /> },
-      { path: routes.myTickets, element: <MyTicketsPage /> },
-      { path: routes.ticketDetails, element: <TicketDetailsPage /> },
-      { path: routes.organizerDashboard, element: <OrganizerDashboardPage /> },
-      { path: routes.organizerNewEvent, element: <OrganizerEventFormPage /> },
-      { path: routes.gateValidation, element: <GateValidationPage /> },
+      {
+        path: routes.events,
+        element: (
+          <RoleRoute allowedRoles={["customer"]} allowGuest>
+            <EventsPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.search,
+        element: (
+          <RoleRoute allowedRoles={["customer"]} allowGuest>
+            <SearchPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.eventDetails,
+        element: (
+          <RoleRoute allowedRoles={["customer"]} allowGuest>
+            <EventDetailsPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.checkout,
+        element: (
+          <RoleRoute allowedRoles={["customer"]}>
+            <CheckoutPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.myTickets,
+        element: (
+          <RoleRoute allowedRoles={["customer"]}>
+            <MyTicketsPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.ticketDetails,
+        element: (
+          <RoleRoute allowedRoles={["customer"]}>
+            <TicketDetailsPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.organizerDashboard,
+        element: (
+          <RoleRoute allowedRoles={["organizer"]}>
+            <OrganizerDashboardPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.organizerNewEvent,
+        element: (
+          <RoleRoute allowedRoles={["organizer"]}>
+            <OrganizerEventFormPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.gateValidation,
+        element: (
+          <RoleRoute allowedRoles={["gate"]}>
+            <GateValidationPage />
+          </RoleRoute>
+        ),
+      },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

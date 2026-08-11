@@ -55,8 +55,8 @@ export function OrganizerDashboardPage() {
       <header className="blue-page-header">
         <div>
           <span className="eyebrow">Organizador</span>
-          <h1>Painel de eventos</h1>
-          <p>Acompanhe publicacoes, disponibilidade e validacoes.</p>
+          <h1>Perfil do organizador</h1>
+          <p>Veja seus eventos, acompanhe disponibilidade e crie novas publicacoes.</p>
         </div>
         <Link className="button button-primary" to={routes.organizerNewEvent}>
           <Plus size={18} aria-hidden="true" />
