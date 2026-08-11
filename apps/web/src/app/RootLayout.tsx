@@ -56,9 +56,10 @@ export function RootLayout() {
         <nav className="main-nav" aria-label="Navegacao principal">
           {navItems.desktop.map((item) => {
             const Icon = item.icon;
+            const exactMatch = item.to === routes.organizerDashboard;
 
             return (
-              <NavLink key={item.to} to={item.to} className="nav-link">
+              <NavLink key={item.to} to={item.to} end={exactMatch} className="nav-link">
                 <Icon size={18} aria-hidden="true" />
                 <span>{item.label}</span>
               </NavLink>
@@ -75,11 +76,13 @@ export function RootLayout() {
         {navItems.mobile.map((item) => {
           const Icon = item.icon;
           const isEventsShortcut = item.to === routes.events && item.label !== "Home";
+          const exactMatch = item.to === routes.organizerDashboard;
 
           return (
             <NavLink
               key={`${item.label}-${item.to}`}
               to={item.to}
+              end={exactMatch}
               className={({ isActive }) =>
                 `mobile-tab ${isActive && !isEventsShortcut ? "active" : ""}`.trim()
               }
