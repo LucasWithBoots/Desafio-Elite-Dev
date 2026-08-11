@@ -54,7 +54,7 @@ export function MyTicketsPage() {
             <div className="ticket-wallet-art">
               <Ticket size={26} aria-hidden="true" />
             </div>
-            <div>
+            <div className="ticket-wallet-content">
               <span className="app-pill">{getStatusLabel(ticket.status)}</span>
               <h2>{ticket.event.title}</h2>
               <p>
@@ -66,7 +66,7 @@ export function MyTicketsPage() {
                 {ticket.event.venueName}
               </p>
             </div>
-            <QrCode size={44} aria-hidden="true" />
+            <QrCode className="ticket-wallet-qr" size={34} aria-hidden="true" />
           </Link>
         ))}
       </div>

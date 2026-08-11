@@ -1,4 +1,4 @@
-import { ArrowLeft, Barcode, Copy, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, Copy, MapPin } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import { Button } from "@/shared/components/Button";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { routes } from "@/shared/constants/routes";
+import { formatDateTime } from "@/shared/lib/formatters";
 
 export function TicketDetailsPage() {
   const { ticketId } = useParams();
@@ -60,23 +61,34 @@ export function TicketDetailsPage() {
         </div>
 
         <div className="ticket-pass-body">
-          <p>
-            <MapPin size={15} aria-hidden="true" />
-            {ticket.event.venueName}
-          </p>
-          <div className="qr-panel">
+          <div className="ticket-pass-meta">
+            <p>
+              <MapPin size={15} aria-hidden="true" />
+              {ticket.event.venueName}
+            </p>
+            <p>
+              <CalendarDays size={15} aria-hidden="true" />
+              {formatDateTime(ticket.event.startsAt)}
+            </p>
+          </div>
+
+          <div className="qr-panel ticket-qr-panel">
             <QRCodeSVG
               value={ticket.qrPayload}
-              size={164}
+              size={152}
               bgColor="#ffffff"
               fgColor="#111111"
               level="M"
               aria-label="QR Code do ingresso"
             />
-            <strong>{ticket.qrPayload}</strong>
+            <div className="ticket-manual-code">
+              <span>Codigo manual</span>
+              <strong>{ticket.code}</strong>
+            </div>
           </div>
+
           <div className="barcode-strip" aria-hidden="true">
-            <Barcode size={220} />
+            <span />
           </div>
         </div>
       </div>
