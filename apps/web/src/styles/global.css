@@ -517,6 +517,7 @@ p {
 .empty-state,
 .loading-state {
   align-items: start;
+  align-content: start;
   background: #ffffff;
   border: 1px solid #ded7cb;
   border-radius: 8px;
@@ -625,6 +626,7 @@ p {
 }
 
 .category-rail {
+  align-items: center;
   display: flex;
   gap: 8px;
   margin: 0 -14px;
@@ -638,16 +640,23 @@ p {
 }
 
 .category-chip {
+  align-items: center;
   background: #ffffff;
   border: 1px solid #e9c7ef;
   border-radius: 999px;
   color: #32332e;
   cursor: pointer;
+  display: inline-flex;
   flex: 0 0 auto;
   font-size: 0.84rem;
   font-weight: 800;
+  height: 40px;
+  justify-content: center;
+  line-height: 1;
+  max-height: 40px;
   min-height: 40px;
   padding: 0 16px;
+  white-space: nowrap;
 }
 
 .category-chip-active {
@@ -1148,7 +1157,9 @@ p {
   background: #ffffff;
   border-radius: 999px;
   display: flex;
+  flex: 0 0 auto;
   gap: 8px;
+  height: 42px;
   min-height: 42px;
   padding: 0 13px;
 }
@@ -1162,6 +1173,7 @@ p {
 }
 
 .filter-rail {
+  align-items: center;
   display: flex;
   gap: 8px;
   margin: 0 -14px;
@@ -1185,8 +1197,12 @@ p {
   font-size: 0.82rem;
   font-weight: 900;
   gap: 6px;
+  height: 38px;
+  line-height: 1;
+  max-height: 38px;
   min-height: 38px;
   padding: 0 13px;
+  white-space: nowrap;
 }
 
 .filter-icon-button {
@@ -1262,10 +1278,13 @@ p {
   gap: 10px;
   margin: 0 -14px;
   overflow: hidden;
-  padding: 48px 14px 14px;
+  padding: 24px 14px 14px;
 }
 
 .search-field-large {
+  align-self: start;
+  height: 42px;
+  max-height: 42px;
   min-height: 42px;
 }
 
@@ -1274,6 +1293,7 @@ p {
 }
 
 .search-filter-rail {
+  min-height: 38px;
   margin: 0 -14px;
   padding: 0 14px;
 }
@@ -2032,7 +2052,7 @@ p {
 }
 
 .compact-category-rail {
-  margin-top: 10px;
+  min-height: 40px;
 }
 
 .scanner-frame {
