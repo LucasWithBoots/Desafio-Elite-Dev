@@ -2,15 +2,17 @@ import {
   Bookmark,
   CalendarDays,
   Home,
+  LogOut,
   PlusCircle,
   QrCode,
   Search,
   Ticket,
   UserRound,
 } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getHomePathForRole } from "@/features/auth/components/RoleRoute";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
+import { clearAuthSession } from "@/features/auth/services/authSession";
 import { routes } from "@/shared/constants/routes";
 
 const customerDesktopNavItems = [
@@ -39,8 +41,17 @@ const gateNavItems = [
 
 export function RootLayout() {
   const session = useAuthSession();
+  const navigate = useNavigate();
   const navItems = getNavItems(session?.user.role);
   const homePath = getHomePathForRole(session?.user.role);
+  const mobileItems = session
+    ? navItems.mobile.filter((item) => item.to !== routes.login)
+    : navItems.mobile;
+
+  function handleLogout() {
+    clearAuthSession();
+    navigate(routes.login);
+  }
 
   return (
     <div className="app-shell">
@@ -65,6 +76,17 @@ export function RootLayout() {
               </NavLink>
             );
           })}
+          {session ? (
+            <button className="nav-link nav-action-button" type="button" onClick={handleLogout}>
+              <LogOut size={18} aria-hidden="true" />
+              <span>Sair</span>
+            </button>
+          ) : (
+            <NavLink to={routes.login} className="nav-link">
+              <UserRound size={18} aria-hidden="true" />
+              <span>Entrar</span>
+            </NavLink>
+          )}
         </nav>
       </header>
 
@@ -73,7 +95,7 @@ export function RootLayout() {
       </main>
 
       <nav className="mobile-tabbar" aria-label="Navegacao principal">
-        {navItems.mobile.map((item) => {
+        {mobileItems.map((item) => {
           const Icon = item.icon;
           const isEventsShortcut = item.to === routes.events && item.label !== "Home";
           const exactMatch = item.to === routes.organizerDashboard;
@@ -92,6 +114,12 @@ export function RootLayout() {
             </NavLink>
           );
         })}
+        {session ? (
+          <button className="mobile-tab mobile-tab-button" type="button" onClick={handleLogout}>
+            <LogOut size={18} aria-hidden="true" />
+            <span>Sair</span>
+          </button>
+        ) : null}
       </nav>
     </div>
   );

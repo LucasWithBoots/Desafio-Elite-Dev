@@ -117,6 +117,12 @@ input {
   color: #211f1c;
 }
 
+.nav-action-button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .page-shell {
   margin: 0 auto;
   max-width: 1180px;
@@ -158,6 +164,12 @@ input {
 .mobile-tab.active {
   background: #dfff00;
   color: #151711;
+}
+
+.mobile-tab-button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .stack {
