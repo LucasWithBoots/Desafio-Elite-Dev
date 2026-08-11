@@ -21,6 +21,13 @@ npm run db:seed -w @elite/api
 npm run dev
 ```
 
+Para usar a busca real da Ticketmaster, preencha no `.env`:
+
+```env
+TICKETMASTER_API_KEY="sua_consumer_key"
+VITE_API_URL="http://localhost:3333"
+```
+
 Tambem e possivel rodar separadamente:
 
 ```bash
@@ -47,6 +54,7 @@ Estes usuarios sao criados pelo seed:
 | --- | --- | --- |
 | Organizador | organizador@elite.dev | 123456 |
 | Cliente | cliente@elite.dev | 123456 |
+| Cliente 2 | cliente2@elite.dev | 123456 |
 | Portaria | portaria@elite.dev | 123456 |
 
 ## Fluxo De Demonstracao
@@ -63,6 +71,5 @@ Este projeto usa IA como apoio para organizacao, planejamento, geracao de esquel
 
 ## Limitacoes Conhecidas
 
-- O front ainda consome mocks em algumas telas e precisa ser conectado aos endpoints reais.
-- A integracao real com Ticketmaster ainda sera implementada.
+- A leitura de QR pela camera usa a API nativa do navegador quando disponivel e mantem digitacao manual como fallback.
 - O setup inicial usa `db:push`; migracoes versionadas podem ser adicionadas antes da entrega final.

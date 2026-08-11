@@ -136,6 +136,19 @@ function buildSearchWhere(
 }
 
 export async function registerEventRoutes(server: FastifyInstance) {
+  server.get("/organizer/events", async (request) => {
+    const session = requireAuthSession(request);
+    requireRoles(session, ["ORGANIZER"]);
+
+    const events = await prisma.event.findMany({
+      where: { organizerId: session.userId },
+      include: eventInclude,
+      orderBy: { startsAt: "asc" },
+    });
+
+    return events.map(toEventDto);
+  });
+
   server.get("/events", async (request) => {
     const parsedQuery = listEventsQuerySchema.safeParse(request.query);
 

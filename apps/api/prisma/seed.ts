@@ -16,6 +16,7 @@ const prisma = new PrismaClient();
 const demoPassword = "123456";
 const organizerId = "usr_organizer_demo";
 const customerId = "usr_customer_demo";
+const customerTwoId = "usr_customer_two_demo";
 const gateUserId = "usr_gate_demo";
 
 const eventSeeds = [
@@ -191,6 +192,13 @@ async function main() {
         id: customerId,
         name: "Cliente Demo",
         email: "cliente@elite.dev",
+        passwordHash,
+        role: UserRole.CUSTOMER,
+      },
+      {
+        id: customerTwoId,
+        name: "Cliente Dois",
+        email: "cliente2@elite.dev",
         passwordHash,
         role: UserRole.CUSTOMER,
       },

@@ -11,7 +11,7 @@ Este roteiro existe para que avaliadores consigam testar o fluxo principal sem m
 
 ## 2. Cliente
 
-1. Entrar como `cliente1@elite.dev`.
+1. Entrar como `cliente@elite.dev`.
 2. Abrir a lista de eventos publicados.
 3. Selecionar um evento.
 4. Escolher um assento disponivel.
