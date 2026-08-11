@@ -10,30 +10,22 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
+import {
+  ALL_EVENT_CATEGORIES,
+  getAvailableEventCategories,
+  getEventCategory,
+  getEventCategoryLabel,
+} from "@/features/event-catalog/lib/eventCategories";
 import { useSavedEvents } from "@/features/saved-events/hooks/useSavedEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { eventDetailsPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
-const ALL_CATEGORIES = "Todos";
-
-const categoryLabels: Record<string, string> = {
-  Art: "Arte",
-  "Arts & Theatre": "Arte e teatro",
-  Ballet: "Ballet",
-  Festivals: "Festivais",
-  "Kids & Family": "Familia",
-  Music: "Shows",
-  Sports: "Esportes",
-  Theatre: "Teatro",
-  Workshops: "Workshops",
-};
-
 export function EventsPage() {
   const navigate = useNavigate();
   const session = useAuthSession();
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
+  const [selectedCategory, setSelectedCategory] = useState(ALL_EVENT_CATEGORIES);
   const { data: events, isLoading, error } = useEvents();
   const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
@@ -59,9 +51,9 @@ export function EventsPage() {
     );
   }
 
-  const categories = getAvailableCategories(events);
+  const categories = getAvailableEventCategories(events);
   const filteredEvents =
-    selectedCategory === ALL_CATEGORIES
+    selectedCategory === ALL_EVENT_CATEGORIES
       ? events
       : events.filter((event) => getEventCategory(event) === selectedCategory);
   const [featuredEvent, ...recommendedEvents] = filteredEvents;
@@ -119,7 +111,7 @@ export function EventsPage() {
             type="button"
             onClick={() => setSelectedCategory(category)}
           >
-            {getCategoryLabel(category)}
+            {getEventCategoryLabel(category)}
           </button>
         ))}
       </div>
@@ -268,26 +260,6 @@ export function EventsPage() {
       </div>
     </section>
   );
-}
-
-function getAvailableCategories(events: Array<{ category?: string; genre?: string }>) {
-  const categories = new Set<string>();
-
-  events.forEach((event) => {
-    categories.add(getEventCategory(event));
-  });
-
-  return [ALL_CATEGORIES, ...Array.from(categories).sort((first, second) =>
-    getCategoryLabel(first).localeCompare(getCategoryLabel(second), "pt-BR"),
-  )];
-}
-
-function getEventCategory(event: { category?: string; genre?: string }) {
-  return event.category?.trim() || event.genre?.trim() || "Outros";
-}
-
-function getCategoryLabel(category: string) {
-  return categoryLabels[category] ?? category;
 }
 
 function getFirstName(name?: string) {
