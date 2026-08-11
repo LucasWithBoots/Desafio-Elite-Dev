@@ -1,19 +1,31 @@
 import { Bookmark, ChevronDown, Filter, MapPin, Search } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
+import { useSavedEvents } from "@/features/saved-events/hooks/useSavedEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
-import { eventDetailsPath } from "@/shared/constants/routes";
+import { eventDetailsPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 const filters = ["Categoria", "Data", "Mapa", "Preco"];
 const categories = ["All", "Music", "Art", "Workshops", "Kids & Family", "Theatre"];
 
 export function SearchPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const { data: events, isLoading, error } = useEvents({ search, category });
+  const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
+
+  function handleSaveClick(eventId: string) {
+    if (!canSave) {
+      navigate(routes.login);
+      return;
+    }
+
+    toggleSavedEvent(eventId);
+  }
 
   if (isLoading) {
     return <LoadingState />;
@@ -58,31 +70,59 @@ export function SearchPage() {
         <h1 id="search-results-title">Resultados em Sao Paulo</h1>
 
         <div className="search-result-list">
-          {events.map((event, index) => (
-            <Link className="search-result-row" key={event.id} to={eventDetailsPath(event.id)}>
-              <div className="search-result-image">
-                {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                <span className="search-save-button" aria-hidden="true">
-                  <Bookmark size={15} />
-                </span>
-              </div>
+          {events.map((event, index) => {
+            const saved = isSaved(event.id);
 
-              <div className="search-result-content">
-                <strong>{event.title}</strong>
-                <span>
-                  <MapPin size={13} aria-hidden="true" />
-                  {event.venueName}
-                </span>
-                <span>{formatSearchDate(event.startsAt)}</span>
-                <div className="result-tags">
-                  <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
-                  <span className="app-pill app-pill-pink">
-                    {event.category ?? event.genre ?? categories[index % categories.length]}
-                  </span>
+            return (
+              <article className="search-result-row" key={event.id}>
+                <div className="search-result-image">
+                  <Link
+                    className="search-result-image-link"
+                    to={eventDetailsPath(event.id)}
+                    aria-label={`Abrir ${event.title}`}
+                  >
+                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                  </Link>
+                  <button
+                    className={`search-save-button ${saved ? "save-button-active" : ""}`}
+                    type="button"
+                    aria-label={
+                      saved ? `Remover ${event.title} dos salvos` : `Salvar ${event.title}`
+                    }
+                    onClick={(clickEvent) => {
+                      clickEvent.preventDefault();
+                      clickEvent.stopPropagation();
+                      handleSaveClick(event.id);
+                    }}
+                  >
+                    <Bookmark
+                      size={15}
+                      fill={saved ? "currentColor" : "none"}
+                      aria-hidden="true"
+                    />
+                  </button>
                 </div>
-              </div>
-            </Link>
-          ))}
+
+                <Link
+                  className="search-result-content"
+                  to={eventDetailsPath(event.id)}
+                >
+                  <strong>{event.title}</strong>
+                  <span>
+                    <MapPin size={13} aria-hidden="true" />
+                    {event.venueName}
+                  </span>
+                  <span>{formatSearchDate(event.startsAt)}</span>
+                  <div className="result-tags">
+                    <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
+                    <span className="app-pill app-pill-pink">
+                      {event.category ?? event.genre ?? categories[index % categories.length]}
+                    </span>
+                  </div>
+                </Link>
+              </article>
+            );
+          })}
         </div>
       </section>
     </section>

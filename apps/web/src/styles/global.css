@@ -688,6 +688,13 @@ p {
   position: relative;
 }
 
+.featured-event-link {
+  color: inherit;
+  display: block;
+  height: 100%;
+  text-decoration: none;
+}
+
 .featured-event-card::after {
   background:
     linear-gradient(
@@ -698,6 +705,7 @@ p {
     linear-gradient(90deg, rgba(255, 109, 58, 0.35), rgba(0, 180, 216, 0.18));
   content: "";
   inset: 0;
+  pointer-events: none;
   position: absolute;
 }
 
@@ -744,13 +752,33 @@ p {
 
 .bookmark-button,
 .recommendation-save {
+  appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 50%;
   color: #ffffff;
+  cursor: pointer;
   height: 42px;
+  padding: 0;
   right: 16px;
   top: 16px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
   width: 42px;
+}
+
+.bookmark-button:hover,
+.recommendation-save:hover,
+.search-save-button:hover {
+  transform: translateY(-1px);
+}
+
+.bookmark-button.save-button-active,
+.recommendation-save.save-button-active,
+.search-save-button.save-button-active {
+  background: var(--pink);
+  border-color: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
 }
 
 .featured-card-content {
@@ -827,9 +855,14 @@ p {
 }
 
 .recommendation-card {
+  position: relative;
+}
+
+.recommendation-card-link {
+  color: inherit;
   display: grid;
   gap: 7px;
-  position: relative;
+  text-decoration: none;
 }
 
 .recommendation-card img {
@@ -845,7 +878,7 @@ p {
   line-height: 1.2;
 }
 
-.recommendation-card > span:last-child {
+.recommendation-card-link > span:last-child {
   color: #6a6d62;
   font-size: 0.82rem;
   font-weight: 800;
@@ -1280,26 +1313,39 @@ p {
   width: 100%;
 }
 
+.search-result-image-link {
+  display: block;
+  height: 100%;
+}
+
 .search-save-button {
+  appearance: none;
   align-items: center;
   background: rgba(21, 23, 17, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 50%;
   color: #ffffff;
+  cursor: pointer;
   display: inline-flex;
   height: 28px;
   justify-content: center;
+  padding: 0;
   position: absolute;
   right: 8px;
   top: 8px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
   width: 28px;
 }
 
 .search-result-content {
   align-content: start;
+  color: inherit;
   display: grid;
   gap: 4px;
   min-width: 0;
+  text-decoration: none;
 }
 
 .search-result-content strong {

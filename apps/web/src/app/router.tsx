@@ -13,6 +13,7 @@ import { MyTicketsPage } from "@/pages/MyTicketsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OrganizerDashboardPage } from "@/pages/OrganizerDashboardPage";
 import { OrganizerEventFormPage } from "@/pages/OrganizerEventFormPage";
+import { SavedEventsPage } from "@/pages/SavedEventsPage";
 import { SearchPage } from "@/pages/SearchPage";
 import { TicketDetailsPage } from "@/pages/TicketDetailsPage";
 import { routes } from "@/shared/constants/routes";
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleRoute allowedRoles={["customer"]} allowGuest>
             <SearchPage />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: routes.savedEvents,
+        element: (
+          <RoleRoute allowedRoles={["customer"]}>
+            <SavedEventsPage />
           </RoleRoute>
         ),
       },

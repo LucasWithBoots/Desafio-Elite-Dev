@@ -6,8 +6,10 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { useEvents } from "@/features/event-catalog/hooks/useEvents";
+import { useSavedEvents } from "@/features/saved-events/hooks/useSavedEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { eventDetailsPath, routes } from "@/shared/constants/routes";
@@ -16,7 +18,10 @@ import { formatCurrency } from "@/shared/lib/formatCurrency";
 const categories = ["Todos", "Shows", "Festivais", "Ballet", "Teatro"];
 
 export function EventsPage() {
+  const navigate = useNavigate();
+  const session = useAuthSession();
   const { data: events, isLoading, error } = useEvents();
+  const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
   if (isLoading) {
     return <LoadingState />;
@@ -41,6 +46,18 @@ export function EventsPage() {
   }
 
   const [featuredEvent, ...recommendedEvents] = events;
+  const userFirstName = getFirstName(session?.user.name);
+  const userInitial = userFirstName?.charAt(0).toUpperCase() ?? "E";
+  const featuredSaved = isSaved(featuredEvent.id);
+
+  function handleSaveClick(eventId: string) {
+    if (!canSave) {
+      navigate(routes.login);
+      return;
+    }
+
+    toggleSavedEvent(eventId);
+  }
 
   return (
     <section className="client-home">
@@ -60,12 +77,16 @@ export function EventsPage() {
         </button>
 
         <div className="client-avatar" aria-hidden="true">
-          L
+          {userInitial}
         </div>
 
         <div className="client-greeting">
-          <span>Oi, Lucas!</span>
-          <strong>Separamos eventos interessantes para voce</strong>
+          <span>{userFirstName ? `Oi, ${userFirstName}!` : "Oi!"}</span>
+          <strong>
+            {userFirstName
+              ? "Separamos eventos interessantes para voce"
+              : "Explore eventos interessantes perto de voce"}
+          </strong>
         </div>
       </header>
 
@@ -97,31 +118,50 @@ export function EventsPage() {
             </Link>
           </div>
 
-          <Link
-            className="featured-event-card"
-            to={eventDetailsPath(featuredEvent.id)}
-          >
-            {featuredEvent.imageUrl ? (
-              <img src={featuredEvent.imageUrl} alt="" />
-            ) : null}
-            <span className="date-bubble">
-              <strong>{getDay(featuredEvent.startsAt)}</strong>
-              <small>{getMonth(featuredEvent.startsAt)}</small>
-            </span>
-            <span className="bookmark-button" aria-hidden="true">
-              <Bookmark size={18} />
-            </span>
-            <span className="featured-card-content">
-              <span className="featured-price">
-                {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+          <article className="featured-event-card">
+            <Link
+              className="featured-event-link"
+              to={eventDetailsPath(featuredEvent.id)}
+            >
+              {featuredEvent.imageUrl ? (
+                <img src={featuredEvent.imageUrl} alt="" />
+              ) : null}
+              <span className="date-bubble">
+                <strong>{getDay(featuredEvent.startsAt)}</strong>
+                <small>{getMonth(featuredEvent.startsAt)}</small>
               </span>
-              <strong>{featuredEvent.title}</strong>
-              <span>
-                <MapPin size={14} aria-hidden="true" />
-                {featuredEvent.venueName}
+              <span className="featured-card-content">
+                <span className="featured-price">
+                  {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+                </span>
+                <strong>{featuredEvent.title}</strong>
+                <span>
+                  <MapPin size={14} aria-hidden="true" />
+                  {featuredEvent.venueName}
+                </span>
               </span>
-            </span>
-          </Link>
+            </Link>
+            <button
+              className={`bookmark-button ${featuredSaved ? "save-button-active" : ""}`}
+              type="button"
+              aria-label={
+                featuredSaved
+                  ? `Remover ${featuredEvent.title} dos salvos`
+                  : `Salvar ${featuredEvent.title}`
+              }
+              onClick={(clickEvent) => {
+                clickEvent.preventDefault();
+                clickEvent.stopPropagation();
+                handleSaveClick(featuredEvent.id);
+              }}
+            >
+              <Bookmark
+                size={18}
+                fill={featuredSaved ? "currentColor" : "none"}
+                aria-hidden="true"
+              />
+            </button>
+          </article>
 
           <div className="carousel-dots" aria-hidden="true">
             <span />
@@ -147,20 +187,42 @@ export function EventsPage() {
           </div>
 
           <div className="recommendation-rail">
-            {recommendedEvents.map((event) => (
-              <Link
-                className="recommendation-card"
-                key={event.id}
-                to={eventDetailsPath(event.id)}
-              >
-                {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                <span className="recommendation-save" aria-hidden="true">
-                  <Bookmark size={16} />
-                </span>
-                <strong>{event.title}</strong>
-                <span>{getShortDate(event.startsAt)}</span>
-              </Link>
-            ))}
+            {recommendedEvents.map((event) => {
+              const saved = isSaved(event.id);
+
+              return (
+                <article className="recommendation-card" key={event.id}>
+                  <Link
+                    className="recommendation-card-link"
+                    to={eventDetailsPath(event.id)}
+                  >
+                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                    <strong>{event.title}</strong>
+                    <span>{getShortDate(event.startsAt)}</span>
+                  </Link>
+                  <button
+                    className={`recommendation-save ${saved ? "save-button-active" : ""}`}
+                    type="button"
+                    aria-label={
+                      saved
+                        ? `Remover ${event.title} dos salvos`
+                        : `Salvar ${event.title}`
+                    }
+                    onClick={(clickEvent) => {
+                      clickEvent.preventDefault();
+                      clickEvent.stopPropagation();
+                      handleSaveClick(event.id);
+                    }}
+                  >
+                    <Bookmark
+                      size={16}
+                      fill={saved ? "currentColor" : "none"}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </article>
+              );
+            })}
           </div>
         </section>
 
@@ -177,6 +239,10 @@ export function EventsPage() {
       </div>
     </section>
   );
+}
+
+function getFirstName(name?: string) {
+  return name?.trim().split(/\s+/)[0];
 }
 
 function getDay(value: string) {

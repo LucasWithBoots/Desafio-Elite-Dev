@@ -19,6 +19,7 @@ import { routes } from "@/shared/constants/routes";
 const customerDesktopNavItems = [
   { to: routes.events, label: "Eventos", icon: CalendarDays },
   { to: routes.search, label: "Buscar", icon: Search },
+  { to: routes.savedEvents, label: "Salvos", icon: Bookmark },
   { to: routes.myTickets, label: "Meus ingressos", icon: Ticket },
 ];
 
@@ -26,7 +27,7 @@ const customerMobileNavItems = [
   { to: routes.events, label: "Home", icon: Home },
   { to: routes.search, label: "Buscar", icon: Search },
   { to: routes.myTickets, label: "Tickets", icon: Ticket },
-  { to: routes.events, label: "Salvos", icon: Bookmark },
+  { to: routes.savedEvents, label: "Salvos", icon: Bookmark },
   { to: routes.login, label: "Perfil", icon: UserRound },
 ];
 
@@ -102,7 +103,6 @@ export function RootLayout() {
       <nav className="mobile-tabbar" aria-label="Navegacao principal" style={mobileTabStyle}>
         {mobileItems.map((item) => {
           const Icon = item.icon;
-          const isEventsShortcut = item.to === routes.events && item.label !== "Home";
           const exactMatch = item.to === routes.organizerDashboard;
 
           return (
@@ -111,7 +111,7 @@ export function RootLayout() {
               to={item.to}
               end={exactMatch}
               className={({ isActive }) =>
-                `mobile-tab ${isActive && !isEventsShortcut ? "active" : ""}`.trim()
+                `mobile-tab ${isActive ? "active" : ""}`.trim()
               }
             >
               <Icon size={18} aria-hidden="true" />

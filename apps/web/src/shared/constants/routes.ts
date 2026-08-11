@@ -2,6 +2,7 @@ export const routes = {
   login: "/login",
   events: "/events",
   search: "/search",
+  savedEvents: "/saved",
   eventDetails: "/events/:eventId",
   checkout: "/events/:eventId/checkout",
   myTickets: "/my-tickets",
