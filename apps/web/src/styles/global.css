@@ -1262,8 +1262,10 @@ p {
 }
 
 .search-screen {
+  align-content: start;
   background: #ffffff;
   gap: 0;
+  grid-auto-rows: max-content;
   margin-left: -14px;
   margin-right: -14px;
   max-width: 468px;
@@ -1272,6 +1274,7 @@ p {
 }
 
 .search-header {
+  align-content: start;
   background: var(--lime);
   border-radius: 0 0 8px 8px;
   display: grid;
