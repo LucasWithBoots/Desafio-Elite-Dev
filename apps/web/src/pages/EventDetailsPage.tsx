@@ -1,14 +1,32 @@
-import { ArrowLeft, CalendarDays, MapPin, Sparkles, UsersRound, X } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Bookmark,
+  CalendarDays,
+  MapPin,
+  Share2,
+  Tags,
+  Ticket,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEvent } from "@/features/event-catalog/hooks/useEvent";
+import {
+  getEventCategory,
+  getEventCategoryLabel,
+} from "@/features/event-catalog/lib/eventCategories";
+import { useSavedEvents } from "@/features/saved-events/hooks/useSavedEvents";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
-import { checkoutPath } from "@/shared/constants/routes";
+import { checkoutPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 export function EventDetailsPage() {
   const { eventId } = useParams();
+  const navigate = useNavigate();
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const { data: event, isLoading } = useEvent(eventId);
+  const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
   if (isLoading) {
     return <LoadingState />;
@@ -24,96 +42,139 @@ export function EventDetailsPage() {
   }
 
   const date = new Date(event.startsAt);
+  const currentEventId = event.id;
+  const categoryLabel = getEventCategoryLabel(getEventCategory(event));
+  const saved = isSaved(event.id);
+  const eventDescription = event.description ?? event.about ?? "";
+  const about = event.about ?? event.description ?? "Mais detalhes em breve.";
+
+  async function handleShare() {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      await navigator.share({
+        title: event?.title,
+        text: eventDescription,
+        url,
+      });
+      return;
+    }
+
+    await navigator.clipboard.writeText(url);
+    setShareFeedback("Link copiado.");
+  }
+
+  function handleSaveClick() {
+    if (!canSave) {
+      navigate(routes.login);
+      return;
+    }
+
+    toggleSavedEvent(currentEventId);
+  }
 
   return (
     <section className="app-screen event-detail-screen">
-      <header className="event-detail-hero">
-        <div className="detail-actions">
-          <Link className="round-action" to="/events" aria-label="Voltar para eventos">
-            <ArrowLeft size={18} aria-hidden="true" />
-          </Link>
-          <button className="round-action" type="button" aria-label="Fechar detalhe">
-            <X size={18} aria-hidden="true" />
+      <header className="event-detail-topbar">
+        <Link className="round-action" to={routes.events} aria-label="Voltar para eventos">
+          <ArrowLeft size={18} aria-hidden="true" />
+        </Link>
+        <strong>{categoryLabel}</strong>
+        <div className="event-detail-topbar-actions">
+          <button className="round-action" type="button" aria-label="Compartilhar evento" onClick={handleShare}>
+            <Share2 size={17} aria-hidden="true" />
           </button>
-        </div>
-
-        <div className="event-detail-art">
-          {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-        </div>
-
-        <div className="event-detail-copy">
-          <span className="app-pill app-pill-blue">Experiencia ao vivo</span>
-          <h1>{event.title}</h1>
-          <p>{event.description}</p>
+          <button
+            className={`round-action event-detail-save ${saved ? "save-button-active" : ""}`}
+            type="button"
+            aria-label={saved ? `Remover ${event.title} dos salvos` : `Salvar ${event.title}`}
+            onClick={handleSaveClick}
+          >
+            <Bookmark size={17} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
+          </button>
         </div>
       </header>
 
-      <div className="app-content">
-        <div className="benefit-grid">
-          <article className="benefit-item">
-            <CalendarDays size={18} aria-hidden="true" />
-            <strong>{formatDayMonth(date)}</strong>
-            <span>{formatTime(date)}</span>
-          </article>
-          <article className="benefit-item">
-            <UsersRound size={18} aria-hidden="true" />
-            <strong>{event.availableTickets}</strong>
-            <span>lugares livres</span>
-          </article>
-        </div>
-
-        <section className="info-card">
-          <div>
-            <MapPin size={18} aria-hidden="true" />
-            <span>{event.venueName}</span>
+      <div className="event-detail-media">
+        {event.imageUrl ? (
+          <img src={event.imageUrl} alt="" />
+        ) : (
+          <div className="event-detail-media-fallback" aria-hidden="true">
+            <Ticket size={52} />
           </div>
-          <p>{event.address ?? "Endereco confirmado apos a compra"}</p>
-        </section>
-
-        <section className="about-card" aria-labelledby="event-about-title">
-          <span className="eyebrow">Sobre</span>
-          <h2 id="event-about-title">Sobre</h2>
-          <p>{event.about ?? event.description}</p>
-        </section>
-
-        <section className="ticket-entry-card" aria-labelledby="ticket-option-title">
-          <span className="eyebrow">Ingressos</span>
-          <h2 id="ticket-option-title">
-            {event.seatingMode === "seat-map"
-              ? "Escolha seus assentos"
-              : "Escolha a quantidade"}
-          </h2>
-          <p>
-            {event.seatingMode === "seat-map"
-              ? "Selecione quantos lugares quiser no mapa antes de pagar."
-              : "Defina quantos ingressos deseja antes de finalizar."}
-          </p>
-          <strong>{formatCurrency(event.price, event.currency)} por ingresso</strong>
-        </section>
-
-        <section className="blue-insight-card">
-          <Sparkles size={20} aria-hidden="true" />
-          <div>
-            <strong>Compra segura com QR assinado</strong>
-            <p>Depois do pagamento, a portaria valida o codigo direto no servidor.</p>
-          </div>
-        </section>
-
-        <Link className="app-primary-action" to={checkoutPath(event.id)}>
-          {event.seatingMode === "seat-map" ? "Escolher assentos" : "Comprar ingressos"}
-        </Link>
+        )}
       </div>
+
+      <main className="event-detail-content">
+        <section className="event-detail-intro" aria-labelledby="event-detail-title">
+          <h1 id="event-detail-title">{event.title}</h1>
+          {eventDescription ? <p>{eventDescription}</p> : null}
+          {shareFeedback ? <span className="event-share-feedback">{shareFeedback}</span> : null}
+        </section>
+
+        <section className="event-main-info" aria-labelledby="event-main-info-title">
+          <h2 id="event-main-info-title">Informacoes principais</h2>
+          <div className="event-main-info-list">
+            <EventInfoRow
+              icon={MapPin}
+              title={event.venueName}
+              detail={event.address ?? event.city ?? "Endereco confirmado apos a compra"}
+            />
+            <EventInfoRow
+              icon={CalendarDays}
+              title={formatDetailDate(date)}
+              detail={formatTime(date)}
+            />
+            <EventInfoRow
+              icon={Ticket}
+              title={formatCurrency(event.price, event.currency)}
+              detail={`${event.availableTickets} ingressos disponiveis`}
+            />
+            <EventInfoRow
+              icon={Tags}
+              title={categoryLabel}
+              detail={event.genre ?? getSeatingModeLabel(event.seatingMode)}
+            />
+          </div>
+        </section>
+
+        <section className="event-about-section" aria-labelledby="event-about-title">
+          <h2 id="event-about-title">Sobre o evento</h2>
+          <p>{about}</p>
+        </section>
+
+        <Link className="app-primary-action event-detail-buy-button" to={checkoutPath(event.id)}>
+          Escolher um ticket
+        </Link>
+      </main>
     </section>
   );
 }
 
-function formatDayMonth(date: Date) {
+interface EventInfoRowProps {
+  icon: LucideIcon;
+  title: string;
+  detail: string;
+}
+
+function EventInfoRow({ icon: Icon, title, detail }: EventInfoRowProps) {
+  return (
+    <div className="event-info-row">
+      <Icon size={16} aria-hidden="true" />
+      <span>
+        <strong>{title}</strong>
+        <small>{detail}</small>
+      </span>
+    </div>
+  );
+}
+
+function formatDetailDate(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
-    month: "short",
-  })
-    .format(date)
-    .replace(".", "");
+    month: "long",
+    year: "numeric",
+  }).format(date);
 }
 
 function formatTime(date: Date) {
@@ -121,4 +182,8 @@ function formatTime(date: Date) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function getSeatingModeLabel(seatingMode: string) {
+  return seatingMode === "seat-map" ? "Assentos marcados" : "Entrada geral";
 }
