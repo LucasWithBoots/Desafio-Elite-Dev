@@ -1,6 +1,6 @@
 import type { User } from "@/entities/user/model";
 import { httpClient } from "@/shared/api/http-client";
-import type { LoginFormValues } from "../types";
+import type { LoginFormValues, RegisterFormValues } from "../types";
 
 export interface LoginResponse {
   token: string;
@@ -15,6 +15,13 @@ export const authService = {
         email: values.email,
         password: values.password,
       }),
+    });
+  },
+
+  register(values: RegisterFormValues) {
+    return httpClient<LoginResponse>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(values),
     });
   },
 

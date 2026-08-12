@@ -16,6 +16,7 @@ import { OrganizerDashboardPage } from "@/pages/OrganizerDashboardPage";
 import { OrganizerEventFormPage } from "@/pages/OrganizerEventFormPage";
 import { ProfileAccountPage } from "@/pages/ProfileAccountPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { RegisterPage } from "@/pages/RegisterPage";
 import { SavedEventsPage } from "@/pages/SavedEventsPage";
 import { SearchPage } from "@/pages/SearchPage";
 import { TicketDetailsPage } from "@/pages/TicketDetailsPage";
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <RoleHomeRedirect /> },
       { path: routes.login, element: <LoginPage /> },
+      { path: routes.register, element: <RegisterPage /> },
       {
         path: routes.profile,
         element: (

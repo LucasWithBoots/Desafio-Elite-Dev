@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { LogIn } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,31 +10,27 @@ import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input";
 import { routes } from "@/shared/constants/routes";
 
-const demoCredentials = { email: "cliente@elite.dev", password: "123456" };
-
-const roleDestinations = {
-  customer: routes.events,
-  organizer: routes.organizerDashboard,
-  gate: routes.gateValidation,
-} as const;
-
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [formValues, setFormValues] = useState(demoCredentials);
+  const [formValues, setFormValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
-  const loginMutation = useMutation({
-    mutationFn: authService.login,
+  const registerMutation = useMutation({
+    mutationFn: authService.register,
     onSuccess: async (session) => {
       saveAuthSession(session);
       await queryClient.invalidateQueries();
-      navigate(roleDestinations[session.user.role]);
+      navigate(routes.events);
     },
   });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    loginMutation.mutate(formValues);
+    registerMutation.mutate(formValues);
   }
 
   return (
@@ -48,14 +44,24 @@ export function LoginPage() {
             <i />
             <i />
           </span>
-          <h1>Entre na sua conta</h1>
-          <p>Descubra eventos, salve favoritos e acompanhe seus tickets.</p>
+          <h1>Crie sua conta</h1>
+          <p>Entre no Elite Events para salvar eventos e comprar tickets.</p>
         </div>
+        <Input
+          label="Nome"
+          name="name"
+          type="text"
+          placeholder="Seu nome"
+          value={formValues.name}
+          onChange={(event) =>
+            setFormValues((current) => ({ ...current, name: event.target.value }))
+          }
+        />
         <Input
           label="E-mail"
           name="email"
           type="email"
-          placeholder="cliente@elite.dev"
+          placeholder="voce@email.com"
           value={formValues.email}
           onChange={(event) =>
             setFormValues((current) => ({ ...current, email: event.target.value }))
@@ -65,25 +71,25 @@ export function LoginPage() {
           label="Senha"
           name="password"
           type="password"
-          placeholder="123456"
+          placeholder="Minimo 6 caracteres"
           value={formValues.password}
           onChange={(event) =>
             setFormValues((current) => ({ ...current, password: event.target.value }))
           }
         />
-        <Button className="auth-submit-button" disabled={loginMutation.isPending}>
-          <LogIn size={18} aria-hidden="true" />
-          {loginMutation.isPending ? "Entrando..." : "Entrar"}
+        <Button className="auth-submit-button" disabled={registerMutation.isPending}>
+          <UserPlus size={18} aria-hidden="true" />
+          {registerMutation.isPending ? "Criando..." : "Criar conta"}
         </Button>
-        {loginMutation.error ? (
+        {registerMutation.error ? (
           <p className="form-feedback">
-            {loginMutation.error instanceof Error
-              ? loginMutation.error.message
-              : "Nao foi possivel entrar."}
+            {registerMutation.error instanceof Error
+              ? registerMutation.error.message
+              : "Nao foi possivel criar sua conta."}
           </p>
         ) : null}
-        <Link className="auth-create-link" to={routes.register}>
-          Nao tem uma conta? <strong>Criar conta</strong>
+        <Link className="auth-create-link" to={routes.login}>
+          Ja tem uma conta? <strong>Entrar</strong>
         </Link>
       </form>
     </section>

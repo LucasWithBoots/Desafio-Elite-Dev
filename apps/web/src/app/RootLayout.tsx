@@ -56,6 +56,8 @@ export function RootLayout() {
   const navItems = getNavItems(session?.user.role);
   const homePath = getHomePathForRole(session?.user.role);
   const shouldHideMobileTabbar =
+    location.pathname === routes.login ||
+    location.pathname === routes.register ||
     /^\/events\/[^/]+\/checkout$/.test(location.pathname) ||
     location.pathname === routes.checkoutSuccess;
   const mobileItems = navItems.mobile;

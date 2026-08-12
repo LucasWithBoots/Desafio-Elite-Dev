@@ -3126,6 +3126,223 @@ button.app-primary-action {
   box-shadow: 0 16px 38px rgba(21, 23, 17, 0.1);
 }
 
+.auth-visual-screen {
+  align-content: end;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.42), transparent 120px),
+    radial-gradient(circle at 84% 18%, rgba(223, 255, 0, 0.28), transparent 142px),
+    linear-gradient(180deg, #ff68b6 0%, #fa72d4 48%, #d66dff 100%);
+  display: grid;
+  gap: 8px;
+  isolation: isolate;
+  margin-left: -14px;
+  margin-right: -14px;
+  max-width: 468px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 10px 14px max(20px, env(safe-area-inset-bottom));
+  position: relative;
+}
+
+.auth-showcase {
+  align-self: stretch;
+  margin-top: -8px;
+  min-height: clamp(326px, 52vh, 462px);
+  position: relative;
+  z-index: 1;
+}
+
+.auth-event-card {
+  background: #151711;
+  border-radius: 14px;
+  box-shadow: 0 18px 36px rgba(24, 12, 25, 0.28);
+  color: #ffffff;
+  display: block;
+  overflow: hidden;
+  position: absolute;
+}
+
+.auth-event-card::after {
+  background: linear-gradient(180deg, transparent 42%, rgba(0, 0, 0, 0.72));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.auth-event-card img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.auth-event-card div {
+  bottom: 12px;
+  display: grid;
+  gap: 4px;
+  left: 12px;
+  position: absolute;
+  right: 12px;
+  z-index: 1;
+}
+
+.auth-event-card strong {
+  font-size: 0.88rem;
+  line-height: 1.05;
+}
+
+.auth-event-card span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.auth-card-save {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 32px;
+  z-index: 2;
+}
+
+.auth-event-card-left {
+  aspect-ratio: 0.76;
+  left: 4px;
+  top: 6px;
+  transform: rotate(-12deg);
+  width: 51%;
+  z-index: 1;
+}
+
+.auth-event-card-right {
+  aspect-ratio: 0.78;
+  right: 2px;
+  top: -4px;
+  transform: rotate(11deg);
+  width: 53%;
+  z-index: 2;
+}
+
+.auth-event-card-main {
+  aspect-ratio: 0.86;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 66%;
+  z-index: 3;
+}
+
+.auth-glass-panel {
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  background: rgba(255, 255, 255, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 28px;
+  box-shadow: 0 20px 44px rgba(32, 14, 32, 0.2);
+  display: grid;
+  gap: 12px;
+  padding: 20px 18px 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-panel-heading {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.auth-panel-heading h1 {
+  font-size: 1.86rem;
+  line-height: 1.03;
+  max-width: 16rem;
+  text-wrap: balance;
+}
+
+.auth-panel-heading p {
+  color: rgba(33, 31, 28, 0.72);
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.38;
+  max-width: 18rem;
+  text-wrap: balance;
+}
+
+.auth-carousel-indicator {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.auth-carousel-indicator i {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  display: block;
+  height: 5px;
+  width: 5px;
+}
+
+.auth-carousel-indicator i:nth-child(3) {
+  background: var(--lime);
+  width: 28px;
+}
+
+.auth-glass-panel .field {
+  gap: 5px;
+}
+
+.auth-glass-panel .field span {
+  color: rgba(33, 31, 28, 0.76);
+  font-size: 0.78rem;
+  padding-left: 4px;
+}
+
+.auth-glass-panel .field input {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 800;
+  min-height: 48px;
+  outline: none;
+  padding: 0 16px;
+}
+
+.auth-glass-panel .field input:focus {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px rgba(223, 255, 0, 0.34);
+}
+
+.auth-submit-button {
+  border-radius: 999px;
+  min-height: 50px;
+}
+
+.auth-create-link {
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  justify-self: center;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.auth-create-link strong {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .role-picker {
   display: grid;
   gap: 8px;
@@ -3494,6 +3711,16 @@ button.app-primary-action {
   .organizer-form-screen {
     align-content: start;
     max-width: 960px;
+  }
+
+  .auth-visual-screen {
+    align-content: end;
+    border-radius: 28px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 468px;
+    min-height: 760px;
+    padding: 22px 18px 24px;
   }
 
   .ticket-list {

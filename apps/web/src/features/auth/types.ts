@@ -5,3 +5,9 @@ export interface LoginFormValues {
   password: string;
   expectedRole?: UserRole;
 }
+
+export interface RegisterFormValues {
+  name: string;
+  email: string;
+  password: string;
+}
