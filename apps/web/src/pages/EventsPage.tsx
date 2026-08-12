@@ -25,7 +25,8 @@ import { formatCurrency } from "@/shared/lib/formatCurrency";
 export function EventsPage() {
   const navigate = useNavigate();
   const session = useAuthSession();
-  const [selectedCategory, setSelectedCategory] = useState(ALL_EVENT_CATEGORIES);
+  const [selectedCategory, setSelectedCategory] =
+    useState(ALL_EVENT_CATEGORIES);
   const { data: events, isLoading, error } = useEvents();
   const { canSave, isSaved, toggleSavedEvent } = useSavedEvents();
 
@@ -37,7 +38,11 @@ export function EventsPage() {
     return (
       <EmptyState
         title="Nao foi possivel carregar os eventos"
-        description={error instanceof Error ? error.message : "Tente novamente em instantes."}
+        description={
+          error instanceof Error
+            ? error.message
+            : "Tente novamente em instantes."
+        }
       />
     );
   }
@@ -74,7 +79,11 @@ export function EventsPage() {
     <section className="client-home">
       <header className="client-hero">
         {featuredEvent?.imageUrl ? (
-          <img className="client-hero-image" src={featuredEvent.imageUrl} alt="" />
+          <img
+            className="client-hero-image"
+            src={featuredEvent.imageUrl}
+            alt=""
+          />
         ) : null}
         <div className="client-hero-shade" aria-hidden="true" />
 
@@ -111,9 +120,17 @@ export function EventsPage() {
               {formatCurrency(featuredEvent.price, featuredEvent.currency)}
             </span>
             <h1>{featuredEvent.title}</h1>
-            <p>{getHeroDescription(featuredEvent.description, featuredEvent.about)}</p>
+            <p>
+              {getHeroDescription(
+                featuredEvent.description,
+                featuredEvent.about,
+              )}
+            </p>
             <div className="desktop-hero-actions">
-              <Link className="button button-primary" to={eventDetailsPath(featuredEvent.id)}>
+              <Link
+                className="button button-primary"
+                to={eventDetailsPath(featuredEvent.id)}
+              >
                 Ver evento
               </Link>
               <Link className="button button-secondary" to={routes.search}>
@@ -144,7 +161,10 @@ export function EventsPage() {
 
       <div className="client-main-grid">
         {featuredEvent ? (
-          <section className="featured-section" aria-labelledby="featured-title">
+          <section
+            className="featured-section"
+            aria-labelledby="featured-title"
+          >
             <div className="section-title-row">
               <div>
                 <span className="eyebrow">Em destaque</span>
@@ -173,7 +193,10 @@ export function EventsPage() {
                 </span>
                 <span className="featured-card-content">
                   <span className="featured-price">
-                    {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+                    {formatCurrency(
+                      featuredEvent.price,
+                      featuredEvent.currency,
+                    )}
                   </span>
                   <strong>{featuredEvent.title}</strong>
                   <span>
@@ -243,7 +266,9 @@ export function EventsPage() {
                     className="recommendation-card-link"
                     to={eventDetailsPath(event.id)}
                   >
-                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                    {event.imageUrl ? (
+                      <img src={event.imageUrl} alt="" />
+                    ) : null}
                     <strong>{event.title}</strong>
                     <span>{getShortDate(event.startsAt)}</span>
                   </Link>
@@ -272,17 +297,6 @@ export function EventsPage() {
             })}
           </div>
         </section>
-
-        <aside className="client-insight-card">
-          <Sparkles size={20} aria-hidden="true" />
-          <div>
-            <strong>Compra rapida, entrada segura</strong>
-            <p>
-              Depois do pagamento, seu ingresso aparece com QR Code e codigo
-              manual.
-            </p>
-          </div>
-        </aside>
       </div>
     </section>
   );
