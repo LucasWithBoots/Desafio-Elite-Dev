@@ -19,6 +19,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "ldrs": "^1.1.9"
+    "ldrs": "^1.1.9",
+    "motion": "^13.1.0"
   }
 }

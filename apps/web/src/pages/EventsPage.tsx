@@ -21,6 +21,7 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { eventDetailsPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import { AnimatePresence, motion } from "motion/react";
 
 export function EventsPage() {
   const navigate = useNavigate();
@@ -145,159 +146,174 @@ export function EventsPage() {
         <span className="home-filter-title">Filtros</span>
         <div className="category-rail" aria-label="Categorias de eventos">
           {categories.map((category) => (
-            <button
+            <motion.button
               className={`category-chip ${
                 selectedCategory === category ? "category-chip-active" : ""
               }`}
               key={category}
               type="button"
               onClick={() => setSelectedCategory(category)}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ duration: 0.15 }}
             >
               {getEventCategoryLabel(category)}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
 
-      <div className="client-main-grid">
-        {featuredEvent ? (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedCategory}
+          className="client-main-grid"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{
+            duration: 0.25,
+            ease: "easeOut",
+          }}
+        >
+          {featuredEvent ? (
+            <section
+              className="featured-section"
+              aria-labelledby="featured-title"
+            >
+              <div className="section-title-row">
+                <div>
+                  <span className="eyebrow">Em destaque</span>
+                  <h1 id="featured-title">Proximos eventos</h1>
+                </div>
+                <Link
+                  className="icon-button search-button"
+                  to={routes.search}
+                  aria-label="Buscar eventos"
+                >
+                  <Search size={18} aria-hidden="true" />
+                </Link>
+              </div>
+
+              <article className="featured-event-card">
+                <Link
+                  className="featured-event-link"
+                  to={eventDetailsPath(featuredEvent.id)}
+                >
+                  {featuredEvent.imageUrl ? (
+                    <img src={featuredEvent.imageUrl} alt="" />
+                  ) : null}
+                  <span className="date-bubble">
+                    <strong>{getDay(featuredEvent.startsAt)}</strong>
+                    <small>{getMonth(featuredEvent.startsAt)}</small>
+                  </span>
+                  <span className="featured-card-content">
+                    <span className="featured-price">
+                      {formatCurrency(
+                        featuredEvent.price,
+                        featuredEvent.currency,
+                      )}
+                    </span>
+                    <strong>{featuredEvent.title}</strong>
+                    <span>
+                      <MapPin size={14} aria-hidden="true" />
+                      {featuredEvent.venueName}
+                    </span>
+                  </span>
+                </Link>
+                <button
+                  className={`bookmark-button ${featuredSaved ? "save-button-active" : ""}`}
+                  type="button"
+                  aria-label={
+                    featuredSaved
+                      ? `Remover ${featuredEvent.title} dos salvos`
+                      : `Salvar ${featuredEvent.title}`
+                  }
+                  onClick={(clickEvent) => {
+                    clickEvent.preventDefault();
+                    clickEvent.stopPropagation();
+                    handleSaveClick(featuredEvent.id);
+                  }}
+                >
+                  <Bookmark
+                    size={18}
+                    fill={featuredSaved ? "currentColor" : "none"}
+                    aria-hidden="true"
+                  />
+                </button>
+              </article>
+
+              <div className="carousel-dots" aria-hidden="true">
+                <span />
+                <span className="active" />
+                <span />
+                <span />
+                <span />
+              </div>
+            </section>
+          ) : (
+            <EmptyState
+              title="Nenhum evento nesta categoria"
+              description="Escolha outra categoria para ver novos eventos em destaque."
+            />
+          )}
+
           <section
-            className="featured-section"
-            aria-labelledby="featured-title"
+            className="recommendation-section"
+            aria-labelledby="recommendation-title"
           >
             <div className="section-title-row">
               <div>
-                <span className="eyebrow">Em destaque</span>
-                <h1 id="featured-title">Proximos eventos</h1>
+                <span className="eyebrow">Recomendacoes</span>
+                <h2 id="recommendation-title">Para sua semana</h2>
               </div>
-              <Link
-                className="icon-button search-button"
-                to={routes.search}
-                aria-label="Buscar eventos"
-              >
-                <Search size={18} aria-hidden="true" />
+              <Link className="text-link" to={routes.search}>
+                Ver todos
               </Link>
             </div>
 
-            <article className="featured-event-card">
-              <Link
-                className="featured-event-link"
-                to={eventDetailsPath(featuredEvent.id)}
-              >
-                {featuredEvent.imageUrl ? (
-                  <img src={featuredEvent.imageUrl} alt="" />
-                ) : null}
-                <span className="date-bubble">
-                  <strong>{getDay(featuredEvent.startsAt)}</strong>
-                  <small>{getMonth(featuredEvent.startsAt)}</small>
-                </span>
-                <span className="featured-card-content">
-                  <span className="featured-price">
-                    {formatCurrency(
-                      featuredEvent.price,
-                      featuredEvent.currency,
-                    )}
-                  </span>
-                  <strong>{featuredEvent.title}</strong>
-                  <span>
-                    <MapPin size={14} aria-hidden="true" />
-                    {featuredEvent.venueName}
-                  </span>
-                </span>
-              </Link>
-              <button
-                className={`bookmark-button ${featuredSaved ? "save-button-active" : ""}`}
-                type="button"
-                aria-label={
-                  featuredSaved
-                    ? `Remover ${featuredEvent.title} dos salvos`
-                    : `Salvar ${featuredEvent.title}`
-                }
-                onClick={(clickEvent) => {
-                  clickEvent.preventDefault();
-                  clickEvent.stopPropagation();
-                  handleSaveClick(featuredEvent.id);
-                }}
-              >
-                <Bookmark
-                  size={18}
-                  fill={featuredSaved ? "currentColor" : "none"}
-                  aria-hidden="true"
-                />
-              </button>
-            </article>
+            <div className="recommendation-rail">
+              {recommendedEvents.map((event) => {
+                const saved = isSaved(event.id);
 
-            <div className="carousel-dots" aria-hidden="true">
-              <span />
-              <span className="active" />
-              <span />
-              <span />
-              <span />
+                return (
+                  <article className="recommendation-card" key={event.id}>
+                    <Link
+                      className="recommendation-card-link"
+                      to={eventDetailsPath(event.id)}
+                    >
+                      {event.imageUrl ? (
+                        <img src={event.imageUrl} alt="" />
+                      ) : null}
+                      <strong>{event.title}</strong>
+                      <span>{getShortDate(event.startsAt)}</span>
+                    </Link>
+                    <button
+                      className={`recommendation-save ${saved ? "save-button-active" : ""}`}
+                      type="button"
+                      aria-label={
+                        saved
+                          ? `Remover ${event.title} dos salvos`
+                          : `Salvar ${event.title}`
+                      }
+                      onClick={(clickEvent) => {
+                        clickEvent.preventDefault();
+                        clickEvent.stopPropagation();
+                        handleSaveClick(event.id);
+                      }}
+                    >
+                      <Bookmark
+                        size={16}
+                        fill={saved ? "currentColor" : "none"}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           </section>
-        ) : (
-          <EmptyState
-            title="Nenhum evento nesta categoria"
-            description="Escolha outra categoria para ver novos eventos em destaque."
-          />
-        )}
-
-        <section
-          className="recommendation-section"
-          aria-labelledby="recommendation-title"
-        >
-          <div className="section-title-row">
-            <div>
-              <span className="eyebrow">Recomendacoes</span>
-              <h2 id="recommendation-title">Para sua semana</h2>
-            </div>
-            <Link className="text-link" to={routes.search}>
-              Ver todos
-            </Link>
-          </div>
-
-          <div className="recommendation-rail">
-            {recommendedEvents.map((event) => {
-              const saved = isSaved(event.id);
-
-              return (
-                <article className="recommendation-card" key={event.id}>
-                  <Link
-                    className="recommendation-card-link"
-                    to={eventDetailsPath(event.id)}
-                  >
-                    {event.imageUrl ? (
-                      <img src={event.imageUrl} alt="" />
-                    ) : null}
-                    <strong>{event.title}</strong>
-                    <span>{getShortDate(event.startsAt)}</span>
-                  </Link>
-                  <button
-                    className={`recommendation-save ${saved ? "save-button-active" : ""}`}
-                    type="button"
-                    aria-label={
-                      saved
-                        ? `Remover ${event.title} dos salvos`
-                        : `Salvar ${event.title}`
-                    }
-                    onClick={(clickEvent) => {
-                      clickEvent.preventDefault();
-                      clickEvent.stopPropagation();
-                      handleSaveClick(event.id);
-                    }}
-                  >
-                    <Bookmark
-                      size={16}
-                      fill={saved ? "currentColor" : "none"}
-                      aria-hidden="true"
-                    />
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     </section>
   );
 }

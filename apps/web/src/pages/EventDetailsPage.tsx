@@ -20,6 +20,7 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { checkoutPath, routes } from "@/shared/constants/routes";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import { AnimatePresence, motion } from "motion/react";
 
 export function EventDetailsPage() {
   const { eventId } = useParams();
@@ -74,56 +75,26 @@ export function EventDetailsPage() {
   }
 
   return (
-    <section className="app-screen event-detail-screen">
-      <header className="event-detail-topbar">
-        <Link
-          className="round-action"
-          to={routes.events}
-          aria-label="Voltar para eventos"
-        >
-          <ArrowLeft size={18} aria-hidden="true" />
-        </Link>
-        <strong>{categoryLabel}</strong>
-        <div className="event-detail-topbar-actions">
-          <button
+    <AnimatePresence mode="wait">
+      <motion.section
+        className="app-screen event-detail-screen"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{
+          duration: 0.25,
+          ease: "easeOut",
+        }}
+      >
+        <header className="event-detail-topbar">
+          <Link
             className="round-action"
-            type="button"
-            aria-label="Compartilhar evento"
-            onClick={handleShare}
+            to={routes.events}
+            aria-label="Voltar para eventos"
           >
-            <Share2 size={17} aria-hidden="true" />
-          </button>
-          <button
-            className={`round-action event-detail-save ${saved ? "save-button-active" : ""}`}
-            type="button"
-            aria-label={
-              saved
-                ? `Remover ${event.title} dos salvos`
-                : `Salvar ${event.title}`
-            }
-            onClick={handleSaveClick}
-          >
-            <Bookmark
-              size={17}
-              fill={saved ? "currentColor" : "none"}
-              aria-hidden="true"
-            />
-          </button>
-        </div>
-      </header>
-
-      <div className="event-detail-media">
-        {event.imageUrl ? (
-          <img src={event.imageUrl} alt="" />
-        ) : (
-          <div className="event-detail-media-fallback" aria-hidden="true">
-            <Ticket size={52} />
-          </div>
-        )}
-      </div>
-
-      <main className="event-detail-content">
-        <header className="event-detail-topbar-desktop">
+            <ArrowLeft size={18} aria-hidden="true" />
+          </Link>
+          <strong>{categoryLabel}</strong>
           <div className="event-detail-topbar-actions">
             <button
               className="round-action"
@@ -151,66 +122,107 @@ export function EventDetailsPage() {
             </button>
           </div>
         </header>
-        <section
-          className="event-detail-intro"
-          aria-labelledby="event-detail-title"
-        >
-          <h1 id="event-detail-title">{event.title}</h1>
-          {eventDescription ? <p>{eventDescription}</p> : null}
-          {shareFeedback ? (
-            <span className="event-share-feedback">{shareFeedback}</span>
-          ) : null}
-        </section>
 
-        <section
-          className="event-main-info"
-          aria-labelledby="event-main-info-title"
-        >
-          <h2 id="event-main-info-title">Informacoes principais</h2>
-          <div className="event-main-info-list">
-            <EventInfoRow
-              icon={MapPin}
-              title={event.venueName}
-              detail={
-                event.address ??
-                event.city ??
-                "Endereco confirmado apos a compra"
-              }
-            />
-            <EventInfoRow
-              icon={CalendarDays}
-              title={formatDetailDate(date)}
-              detail={formatTime(date)}
-            />
-            <EventInfoRow
-              icon={Ticket}
-              title={formatCurrency(event.price, event.currency)}
-              detail={`${event.availableTickets} ingressos disponiveis`}
-            />
-            <EventInfoRow
-              icon={Tags}
-              title={categoryLabel}
-              detail={event.genre ?? getSeatingModeLabel(event.seatingMode)}
-            />
-          </div>
-        </section>
+        <div className="event-detail-media">
+          {event.imageUrl ? (
+            <img src={event.imageUrl} alt="" />
+          ) : (
+            <div className="event-detail-media-fallback" aria-hidden="true">
+              <Ticket size={52} />
+            </div>
+          )}
+        </div>
 
-        <section
-          className="event-about-section"
-          aria-labelledby="event-about-title"
-        >
-          <h2 id="event-about-title">Sobre o evento</h2>
-          <p>{about}</p>
-        </section>
+        <main className="event-detail-content">
+          <header className="event-detail-topbar-desktop">
+            <div className="event-detail-topbar-actions">
+              <button
+                className="round-action"
+                type="button"
+                aria-label="Compartilhar evento"
+                onClick={handleShare}
+              >
+                <Share2 size={17} aria-hidden="true" />
+              </button>
+              <button
+                className={`round-action event-detail-save ${saved ? "save-button-active" : ""}`}
+                type="button"
+                aria-label={
+                  saved
+                    ? `Remover ${event.title} dos salvos`
+                    : `Salvar ${event.title}`
+                }
+                onClick={handleSaveClick}
+              >
+                <Bookmark
+                  size={17}
+                  fill={saved ? "currentColor" : "none"}
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </header>
+          <section
+            className="event-detail-intro"
+            aria-labelledby="event-detail-title"
+          >
+            <h1 id="event-detail-title">{event.title}</h1>
+            {eventDescription ? <p>{eventDescription}</p> : null}
+            {shareFeedback ? (
+              <span className="event-share-feedback">{shareFeedback}</span>
+            ) : null}
+          </section>
 
-        <Link
-          className="app-primary-action event-detail-buy-button"
-          to={checkoutPath(event.id)}
-        >
-          Escolher um ticket
-        </Link>
-      </main>
-    </section>
+          <section
+            className="event-main-info"
+            aria-labelledby="event-main-info-title"
+          >
+            <h2 id="event-main-info-title">Informacoes principais</h2>
+            <div className="event-main-info-list">
+              <EventInfoRow
+                icon={MapPin}
+                title={event.venueName}
+                detail={
+                  event.address ??
+                  event.city ??
+                  "Endereco confirmado apos a compra"
+                }
+              />
+              <EventInfoRow
+                icon={CalendarDays}
+                title={formatDetailDate(date)}
+                detail={formatTime(date)}
+              />
+              <EventInfoRow
+                icon={Ticket}
+                title={formatCurrency(event.price, event.currency)}
+                detail={`${event.availableTickets} ingressos disponiveis`}
+              />
+              <EventInfoRow
+                icon={Tags}
+                title={categoryLabel}
+                detail={event.genre ?? getSeatingModeLabel(event.seatingMode)}
+              />
+            </div>
+          </section>
+
+          <section
+            className="event-about-section"
+            aria-labelledby="event-about-title"
+          >
+            <h2 id="event-about-title">Sobre o evento</h2>
+            <p>{about}</p>
+          </section>
+
+          <Link
+            className="app-primary-action event-detail-buy-button"
+            to={checkoutPath(event.id)}
+          >
+            Escolher um ticket
+          </Link>
+        </main>
+      </motion.section>
+    </AnimatePresence>
   );
 }
 
