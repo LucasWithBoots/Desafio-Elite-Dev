@@ -63,7 +63,11 @@ export function SearchPage() {
       {error ? (
         <EmptyState
           title="Nao foi possivel buscar eventos"
-          description={error instanceof Error ? error.message : "Tente novamente em instantes."}
+          description={
+            error instanceof Error
+              ? error.message
+              : "Tente novamente em instantes."
+          }
         />
       ) : isLoading ? (
         <LoadingState />
@@ -73,7 +77,10 @@ export function SearchPage() {
           description="Tente buscar por outro nome, data ou categoria."
         />
       ) : (
-        <section className="search-results-section" aria-labelledby="search-results-title">
+        <section
+          className="search-results-section"
+          aria-labelledby="search-results-title"
+        >
           <div className="search-results-title-row">
             <h1 id="search-results-title">Resultados em Sao Paulo</h1>
             {isFetching ? (
@@ -95,13 +102,17 @@ export function SearchPage() {
                       to={eventDetailsPath(event.id)}
                       aria-label={`Abrir ${event.title}`}
                     >
-                      {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                      {event.imageUrl ? (
+                        <img src={event.imageUrl} alt="" />
+                      ) : null}
                     </Link>
                     <button
                       className={`search-save-button ${saved ? "save-button-active" : ""}`}
                       type="button"
                       aria-label={
-                        saved ? `Remover ${event.title} dos salvos` : `Salvar ${event.title}`
+                        saved
+                          ? `Remover ${event.title} dos salvos`
+                          : `Salvar ${event.title}`
                       }
                       onClick={(clickEvent) => {
                         clickEvent.preventDefault();
@@ -128,7 +139,9 @@ export function SearchPage() {
                     </span>
                     <span>{formatSearchDate(event.startsAt)}</span>
                     <div className="result-tags">
-                      <span className="app-pill">{formatCurrency(event.price, event.currency)}</span>
+                      <span className="app-pill">
+                        {formatCurrency(event.price, event.currency)}
+                      </span>
                       <span className="app-pill app-pill-pink">
                         {getEventCategoryLabel(getEventCategory(event))}
                       </span>
@@ -175,7 +188,10 @@ function SearchHeader({
         />
       </label>
 
-      <div className="filter-rail search-filter-rail" aria-label="Filtros de busca">
+      <div
+        className="filter-rail search-filter-rail"
+        aria-label="Filtros de busca"
+      >
         <button
           className={`filter-button filter-icon-button ${
             isCategoryFiltersOpen ? "filter-button-selected" : ""
