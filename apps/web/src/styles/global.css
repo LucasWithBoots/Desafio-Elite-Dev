@@ -4277,7 +4277,6 @@ button.app-primary-action {
   .profile-account-screen {
     max-width: 960px !important;
     margin: 0 auto;
-    padding: 64px 0;
     display: grid;
     grid-template-columns: 320px 1fr;
     column-gap: 64px;
