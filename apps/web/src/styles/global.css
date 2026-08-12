@@ -3126,6 +3126,169 @@ button.app-primary-action {
   right: 18px;
 }
 
+.gate-reader-panel {
+  gap: 16px;
+}
+
+.gate-reader-panel > div > strong {
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.gate-reader-panel > div > p {
+  color: var(--muted);
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
+.gate-mode-toggle {
+  background: #f4f2ec;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 999px;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 4px;
+}
+
+.gate-mode-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 900;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 10px;
+}
+
+.gate-mode-button.active {
+  background: var(--pink);
+  box-shadow: 0 10px 22px rgba(239, 123, 232, 0.22);
+}
+
+.gate-code-form {
+  display: grid;
+  gap: 12px;
+}
+
+.gate-code-field textarea {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 800;
+  line-height: 1.4;
+  min-height: 112px;
+  outline: none;
+  padding: 14px 16px;
+  resize: vertical;
+  width: 100%;
+}
+
+.gate-code-field textarea:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px rgba(239, 123, 232, 0.16);
+}
+
+.gate-result-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(21, 23, 17, 0.08);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.gate-result-status {
+  display: grid;
+  gap: 6px;
+}
+
+.gate-result-status svg {
+  color: var(--muted);
+}
+
+.gate-result-status > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.gate-result-status strong {
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1.08;
+}
+
+.gate-result-status p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.gate-result-valid {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.gate-result-valid .gate-result-status svg,
+.gate-result-valid .gate-result-status > span,
+.gate-result-valid .gate-result-status p {
+  color: #263000;
+}
+
+.gate-result-already-used {
+  background: #fff6fd;
+  border-color: var(--pink);
+}
+
+.gate-result-already-used .gate-result-status svg,
+.gate-result-already-used .gate-result-status strong {
+  color: #b21d49;
+}
+
+.gate-result-invalid,
+.gate-result-wrong-event {
+  background: #fff8f7;
+  border-color: #f4c8c1;
+}
+
+.gate-result-invalid .gate-result-status svg,
+.gate-result-invalid .gate-result-status strong,
+.gate-result-wrong-event .gate-result-status svg,
+.gate-result-wrong-event .gate-result-status strong {
+  color: #b3261e;
+}
+
+.gate-ticket-summary {
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+}
+
+.gate-ticket-summary strong {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.gate-ticket-summary span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
 .validation-state-valid {
   background: var(--lime);
 }

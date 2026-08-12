@@ -2,7 +2,8 @@ import { httpClient } from "@/shared/api/http-client";
 import type { GateValidationResult } from "../types";
 
 export interface ValidateTicketInput {
-  qrPayload: string;
+  qrPayload?: string;
+  manualCode?: string;
   eventId?: string;
 }
 

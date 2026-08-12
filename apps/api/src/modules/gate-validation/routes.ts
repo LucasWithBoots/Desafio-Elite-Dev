@@ -1,16 +1,21 @@
 import { TicketStatus } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../../infra/db/prisma.js";
 import { badRequest } from "../../shared/http-error.js";
 import { requireAuthSession, requireRoles } from "../auth/session.js";
-import { hashTicketPayload } from "../tickets/codes.js";
+import { hashTicketPayload, normalizeManualTicketCode } from "../tickets/codes.js";
 import { toTicketDto } from "../tickets/mappers.js";
 
 const validateTicketBodySchema = z.object({
-  qrPayload: z.string().min(1),
+  qrPayload: z.string().optional(),
+  manualCode: z.string().optional(),
   eventId: z.string().optional(),
-});
+}).refine(
+  (data) => Boolean(data.qrPayload?.trim() || data.manualCode?.trim()),
+  "A ticket code or QR payload is required",
+);
 
 const ticketInclude = {
   event: {
@@ -46,10 +51,9 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
       throw badRequest("Invalid gate validation payload");
     }
 
-    const ticket = await prisma.ticket.findUnique({
-      where: {
-        codeHash: hashTicketPayload(parsedBody.data.qrPayload),
-      },
+    const ticketWhere = buildTicketWhere(parsedBody.data);
+    const ticket = await prisma.ticket.findFirst({
+      where: ticketWhere,
       include: ticketInclude,
     });
 
@@ -90,7 +94,7 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
     if (ticket.status === TicketStatus.USED) {
       return {
         status: "already-used",
-        message: "Ingresso ja utilizado.",
+        message: "Este ingresso ja foi lido na portaria.",
         ticket: toTicketDto(ticket),
       };
     }
@@ -113,7 +117,7 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
 
     return {
       status: "valid",
-      message: "Ingresso valido. Entrada liberada.",
+      message: "QR Code valido. Entrada liberada.",
       ticket: toTicketDto(validatedTicket),
       event: {
         id: validatedTicket.event.id,
@@ -123,4 +127,60 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
       },
     };
   });
+}
+
+function buildTicketWhere(
+  input: z.infer<typeof validateTicketBodySchema>,
+): Prisma.TicketWhereInput {
+  const conditions: Prisma.TicketWhereInput[] = [];
+  const qrPayload = input.qrPayload?.trim();
+  const manualCode = input.manualCode?.trim();
+
+  if (qrPayload) {
+    conditions.push({ codeHash: hashTicketPayload(qrPayload) });
+    conditions.push({ qrPayload });
+
+    const shareSlug = extractShareSlug(qrPayload);
+    if (shareSlug) {
+      conditions.push({ shareSlug });
+    }
+  }
+
+  if (manualCode) {
+    const lowercaseManualCode = manualCode.toLowerCase();
+
+    if (lowercaseManualCode.startsWith("elite:ticket:")) {
+      conditions.push({ codeHash: hashTicketPayload(manualCode) });
+    }
+
+    if (lowercaseManualCode.startsWith("tck_")) {
+      conditions.push({ id: lowercaseManualCode });
+    }
+
+    const normalizedManualCode = normalizeManualTicketCode(manualCode);
+    const ticketIdPrefix = normalizedManualCode.startsWith("tck")
+      ? normalizedManualCode.slice(3)
+      : normalizedManualCode;
+
+    if (ticketIdPrefix) {
+      conditions.push({
+        id: {
+          startsWith: `tck_${ticketIdPrefix}`,
+        },
+      });
+    }
+  }
+
+  return { OR: conditions };
+}
+
+function extractShareSlug(value: string) {
+  try {
+    const url = new URL(value);
+    const match = url.pathname.match(/\/tickets\/share\/([^/]+)/);
+
+    return match?.[1] ? decodeURIComponent(match[1]) : null;
+  } catch {
+    return null;
+  }
 }

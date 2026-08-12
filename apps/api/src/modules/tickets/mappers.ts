@@ -1,5 +1,6 @@
 import type { Event, Seat, Ticket } from "@prisma/client";
 import { env } from "../../shared/env.js";
+import { createManualTicketCode } from "./codes.js";
 
 const ticketStatusMap = {
   ACTIVE: "active",
@@ -21,7 +22,7 @@ export function toTicketDto(ticket: TicketWithRelations) {
     eventId: ticket.eventId,
     customerId: ticket.customerId,
     seatId: ticket.seatId ?? undefined,
-    code: ticket.qrPayload,
+    code: createManualTicketCode(ticket.id),
     qrPayload: ticket.qrPayload,
     shareUrl: `${env.WEB_API_URL}/tickets/share/${ticket.shareSlug}`,
     status: ticketStatusMap[ticket.status],

@@ -17,6 +17,14 @@ export function createShareSlug(ticketId: string) {
   return `${ticketId.replaceAll("_", "-")}-${randomUUID().slice(0, 8)}`;
 }
 
+export function createManualTicketCode(ticketId: string) {
+  return ticketId.replace(/^tck_/, "").slice(0, 8).toUpperCase();
+}
+
+export function normalizeManualTicketCode(code: string) {
+  return code.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase();
+}
+
 export function hashTicketPayload(payload: string) {
   return createHmac("sha256", env.TICKET_SIGNING_SECRET)
     .update(payload)
