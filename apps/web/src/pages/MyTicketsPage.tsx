@@ -45,13 +45,16 @@ export function MyTicketsPage() {
 
   return (
     <section className="app-screen my-tickets-screen">
-      <header className="compact-header lime-compact-header my-tickets-header">
-        <span />
-        <strong>Tickets</strong>
-        <span />
+      <header className="lime-page-header">
+        <h1>Meus ingressos</h1>
+        <p>Ingressos de eventos que você já comprou.</p>
       </header>
 
-      <div className="ticket-tabs" role="tablist" aria-label="Filtrar ingressos">
+      <div
+        className="ticket-tabs"
+        role="tablist"
+        aria-label="Filtrar ingressos"
+      >
         <button
           className={`ticket-tab-button${selectedTab === "active" ? " ticket-tab-button-active" : ""}`}
           type="button"
@@ -97,7 +100,9 @@ export function MyTicketsPage() {
                   <CalendarDays size={13} aria-hidden="true" />
                   {formatWalletDate(ticket.event.startsAt)}
                 </p>
-                <span className="ticket-count-pill">{getTicketCountLabel(1)}</span>
+                <span className="ticket-count-pill">
+                  {getTicketCountLabel(1)}
+                </span>
               </div>
             </Link>
           ))}

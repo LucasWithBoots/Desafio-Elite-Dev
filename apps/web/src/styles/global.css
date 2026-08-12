@@ -1476,6 +1476,10 @@ button.app-primary-action {
   z-index: 5;
 }
 
+.event-detail-topbar-desktop {
+  display: none;
+}
+
 .event-detail-topbar > strong {
   color: var(--ink);
   font-size: 0.98rem;
@@ -4052,9 +4056,8 @@ button.app-primary-action {
   .search-panel,
   .payment-hero,
   .lime-compact-header {
-    border-radius: 0 0 var(--header-radius) var(--header-radius);
-    margin-left: 0;
-    margin-right: 0;
+    border-radius: var(--header-radius);
+    padding: 30px;
   }
 
   .search-panel {
@@ -4081,7 +4084,7 @@ button.app-primary-action {
     background: transparent;
     margin-left: auto;
     margin-right: auto;
-    max-width: 1080px;
+    max-width: 1120px;
     padding: 0;
   }
 
@@ -4154,6 +4157,7 @@ button.app-primary-action {
   }
 
   .event-detail-topbar-desktop {
+    display: block;
   }
 
   .event-detail-media {
@@ -4213,16 +4217,56 @@ button.app-primary-action {
     font-size: 2.45rem;
   }
 
-  .profile-screen,
   .profile-account-screen {
     max-width: 440px;
   }
 
+  .profile-screen {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 64px 0;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    column-gap: 64px;
+    row-gap: 24px;
+    align-items: start;
+  }
+
+  .profile-identity {
+    grid-column: 1;
+    margin-top: 12px;
+  }
+
+  .profile-identity h1 {
+    font-size: 2.2rem;
+  }
+
+  .profile-menu-section {
+    grid-column: 2;
+    grid-row: 1 / span 2; /* Ocupa as linhas 1 e 2 (cobrindo a altura do Hero + Nome) */
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px 40px;
+    box-shadow: 0 24px 48px rgba(21, 23, 17, 0.04);
+  }
+
+  .profile-menu-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    padding-left: 0;
+  }
+
+  .profile-option {
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
   .profile-hero,
   .profile-account-header {
-    border-radius: 0 0 var(--header-radius) var(--header-radius);
-    margin-left: 0;
-    margin-right: 0;
+    border-radius: var(--header-radius);
   }
 
   .payment-methods {
@@ -4236,7 +4280,25 @@ button.app-primary-action {
   .organizer-screen,
   .organizer-form-screen {
     align-content: start;
-    max-width: 960px;
+    max-width: 1120px;
+  }
+
+  .my-tickets-screen .lime-page-header {
+    border-radius: var(--header-radius);
+    margin-bottom: 24px;
+  }
+
+  .ticket-tabs {
+    max-width: 320px;
+    margin-bottom: 24px;
+  }
+
+  .ticket-list {
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    ); /* 3 ingressos por linha em vez de 2 */
+    gap: 24px;
   }
 
   .auth-visual-screen {
@@ -4254,12 +4316,26 @@ button.app-primary-action {
   }
 
   .ticket-detail-screen {
+    padding: 32px 0 64px;
     grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .lime-compact-header {
+    display: none;
+  }
+
+  .ticket-detail-screen {
+    grid-column: 1 / -1;
+    margin: 0 0 16px 0;
+    border-radius: var(--header-radius);
   }
 
   .ticket-detail-screen > .button {
-    align-self: start;
-    margin-top: 80px;
+    grid-column: 2;
+    margin-top: 0;
+    max-width: 340px;
   }
 
   .metric-grid {

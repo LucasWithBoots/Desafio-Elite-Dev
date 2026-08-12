@@ -22,7 +22,11 @@ export function SavedEventsPage() {
     return (
       <EmptyState
         title="Nao foi possivel carregar seus salvos"
-        description={error instanceof Error ? error.message : "Tente novamente em instantes."}
+        description={
+          error instanceof Error
+            ? error.message
+            : "Tente novamente em instantes."
+        }
       />
     );
   }
@@ -44,7 +48,6 @@ export function SavedEventsPage() {
   return (
     <section className="app-screen saved-events-screen">
       <header className="lime-page-header">
-        <span className="eyebrow">Salvos</span>
         <h1>Eventos salvos</h1>
         <p>Eventos que voce separou para decidir depois.</p>
       </header>
