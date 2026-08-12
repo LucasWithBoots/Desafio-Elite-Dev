@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { eventManagementService } from "@/features/event-management/services/eventManagementService";
 import type { TicketmasterCatalogItem } from "@/features/event-management/types";
+import { ApiError } from "@/shared/api/http-client";
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input";
 import { routes } from "@/shared/constants/routes";
@@ -14,17 +15,22 @@ export function OrganizerEventFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [keyword, setKeyword] = useState("");
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [catalogFeedback, setCatalogFeedback] = useState<string | null>(null);
+  const [manualFeedback, setManualFeedback] = useState<string | null>(null);
   const [catalogResults, setCatalogResults] = useState<TicketmasterCatalogItem[]>([]);
 
   const searchMutation = useMutation({
     mutationFn: eventManagementService.searchTicketmasterEvents,
     onSuccess: (response) => {
       setCatalogResults(response.items);
-      setFeedback(response.items.length ? null : "Nenhum evento encontrado na Ticketmaster.");
+      setCatalogFeedback(
+        response.items.length ? null : "Nenhum evento encontrado na Ticketmaster.",
+      );
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : "Nao foi possivel buscar no catalogo.");
+      setCatalogFeedback(
+        error instanceof Error ? error.message : "Nao foi possivel buscar no catalogo.",
+      );
     },
   });
 
@@ -35,7 +41,9 @@ export function OrganizerEventFormPage() {
       navigate(routes.organizerDashboard);
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : "Nao foi possivel criar o evento.");
+      setManualFeedback(
+        error instanceof Error ? error.message : "Nao foi possivel criar o evento.",
+      );
     },
   });
 
@@ -48,9 +56,12 @@ export function OrganizerEventFormPage() {
         seatingMode: "seat-map",
         publish: false,
       }),
+    onMutate: () => {
+      setCatalogFeedback(null);
+    },
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ["organizer", "events"] });
-      setFeedback(
+      setCatalogFeedback(
         response.alreadyImported
           ? "Evento ja estava importado como rascunho."
           : "Evento importado como rascunho.",
@@ -58,7 +69,15 @@ export function OrganizerEventFormPage() {
       navigate(routes.organizerDashboard);
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : "Nao foi possivel importar o evento.");
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        setCatalogFeedback("Sessao expirada. Entre novamente como organizador para importar.");
+        navigate(routes.login);
+        return;
+      }
+
+      setCatalogFeedback(
+        error instanceof Error ? error.message : "Nao foi possivel importar o evento.",
+      );
     },
   });
 
@@ -66,12 +85,14 @@ export function OrganizerEventFormPage() {
     event.preventDefault();
 
     if (keyword.trim()) {
+      setCatalogFeedback(null);
       searchMutation.mutate(keyword.trim());
     }
   }
 
   function handleManualSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setManualFeedback(null);
 
     const formData = new FormData(event.currentTarget);
     createMutation.mutate({
@@ -125,31 +146,40 @@ export function OrganizerEventFormPage() {
             </Button>
           </form>
 
+          {catalogFeedback ? <p className="form-feedback">{catalogFeedback}</p> : null}
+
           {catalogResults.length ? (
             <div className="catalog-result-list">
-              {catalogResults.map((event) => (
-                <article className="catalog-result-card" key={event.externalId}>
-                  {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                  <div>
-                    <strong>{event.title}</strong>
-                    <span>{event.venueName ?? "Local a definir"}</span>
-                    <span>
-                      {event.startsAt ? formatDateTime(event.startsAt) : "Data a definir"}
-                    </span>
-                    <span>
-                      {formatCurrency(event.minPrice ?? 0, event.currency ?? "BRL")}
-                    </span>
-                  </div>
-                  <button
-                    className="icon-text-button"
-                    type="button"
-                    disabled={importMutation.isPending}
-                    onClick={() => importMutation.mutate(event)}
-                  >
-                    Importar
-                  </button>
-                </article>
-              ))}
+              {catalogResults.map((event) => {
+                const isImportingThisEvent =
+                  importMutation.isPending &&
+                  importMutation.variables?.externalId === event.externalId;
+
+                return (
+                  <article className="catalog-result-card" key={event.externalId}>
+                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                    <div>
+                      <strong>{event.title}</strong>
+                      <span>{event.venueName ?? "Local a definir"}</span>
+                      <span>
+                        {event.startsAt ? formatDateTime(event.startsAt) : "Data a definir"}
+                      </span>
+                      <span>
+                        {formatCurrency(event.minPrice ?? 0, event.currency ?? "BRL")}
+                      </span>
+                    </div>
+                    <button
+                      className="icon-text-button"
+                      type="button"
+                      aria-busy={isImportingThisEvent}
+                      disabled={importMutation.isPending}
+                      onClick={() => importMutation.mutate(event)}
+                    >
+                      {isImportingThisEvent ? "Importando..." : "Importar"}
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           ) : null}
         </section>
@@ -194,7 +224,7 @@ export function OrganizerEventFormPage() {
         </section>
       </div>
 
-      {feedback ? <p className="form-feedback">{feedback}</p> : null}
+      {manualFeedback ? <p className="form-feedback">{manualFeedback}</p> : null}
     </section>
   );
 }

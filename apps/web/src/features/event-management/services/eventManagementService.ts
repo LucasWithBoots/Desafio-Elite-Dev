@@ -36,10 +36,12 @@ export const eventManagementService = {
     ticketmasterId: string,
     input: ImportTicketmasterEventInput,
   ) {
+    const encodedTicketmasterId = encodeURIComponent(ticketmasterId);
+
     return httpClient<{
       event: Event;
       alreadyImported: boolean;
-    }>(`/catalog/ticketmaster/events/${ticketmasterId}/import`, {
+    }>(`/catalog/ticketmaster/events/${encodedTicketmasterId}/import`, {
       method: "POST",
       body: JSON.stringify(input),
     });
