@@ -4275,13 +4275,45 @@ button.app-primary-action {
   }
 
   .profile-account-screen {
-    max-width: 440px;
+    max-width: 960px !important;
+    margin: 0 auto;
+    padding: 64px 0;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    column-gap: 64px;
+    align-items: start;
+  }
+
+  .profile-account-header {
+    grid-column: 1;
+    margin: 0;
+    border-radius: 24px !important;
+    min-height: 180px;
+    align-content: center;
+    box-shadow: 0 16px 32px rgba(21, 23, 17, 0.06);
+  }
+
+  .profile-account-header h1 {
+    font-size: 2rem;
+  }
+
+  .profile-account-panel {
+    grid-column: 2;
+    border-radius: 24px;
+    padding: 32px 40px;
+    box-shadow: 0 24px 48px rgba(21, 23, 17, 0.04);
+    gap: 20px;
+  }
+
+  .profile-readonly-field input {
+    min-height: 52px;
+    font-size: 1rem;
+    background: #fbfcf6;
   }
 
   .profile-screen {
     max-width: 960px;
     margin: 0 auto;
-    padding: 64px 0;
     display: grid;
     grid-template-columns: 320px 1fr;
     column-gap: 64px;
@@ -4338,6 +4370,41 @@ button.app-primary-action {
   .organizer-form-screen {
     align-content: start;
     max-width: 1120px;
+  }
+  .gate-screen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+
+  .gate-screen .lime-page-header {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+
+  .gate-screen .gate-grid {
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+  }
+
+  .gate-screen .scanner-panel {
+    padding: 32px;
+  }
+
+  .gate-screen .gate-result-card {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 32px;
+    min-height: 480px;
+    align-content: center;
+  }
+
+  .gate-screen .gate-login-link {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    justify-self: center;
   }
 
   .my-tickets-screen .lime-page-header {

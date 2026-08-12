@@ -28,7 +28,11 @@ const roleDescriptions: Record<UserRole, string> = {
 };
 
 export function ProfileAccountPage() {
-  const { data: user, isLoading, error } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authService.me,
   });
@@ -54,7 +58,11 @@ export function ProfileAccountPage() {
   return (
     <section className="app-screen profile-account-screen">
       <header className="profile-account-header">
-        <Link className="round-action" to={routes.profile} aria-label="Voltar para perfil">
+        <Link
+          className="round-action"
+          to={routes.profile}
+          aria-label="Voltar para perfil"
+        >
           <ArrowLeft size={18} aria-hidden="true" />
         </Link>
         <div>
@@ -63,16 +71,21 @@ export function ProfileAccountPage() {
         </div>
       </header>
 
-      <section className="profile-account-panel" aria-label="Dados nao editaveis da conta">
-        <ReadonlyAccountField label="Nome completo" value={user.name} icon={UserRound} />
-        <ReadonlyAccountField label="Email" value={user.email} icon={Mail} />
-        <ReadonlyAccountField label="Perfil" value={roleLabels[user.role]} icon={ShieldCheck} />
+      <section
+        className="profile-account-panel"
+        aria-label="Dados nao editaveis da conta"
+      >
         <ReadonlyAccountField
-          label="Permissao"
-          value={roleDescriptions[user.role]}
-          icon={LockKeyhole}
+          label="Nome completo"
+          value={user.name}
+          icon={UserRound}
         />
-        <ReadonlyAccountField label="ID da conta" value={user.id} icon={Fingerprint} />
+        <ReadonlyAccountField label="Email" value={user.email} icon={Mail} />
+        <ReadonlyAccountField
+          label="Perfil"
+          value={roleLabels[user.role]}
+          icon={ShieldCheck}
+        />
       </section>
     </section>
   );
