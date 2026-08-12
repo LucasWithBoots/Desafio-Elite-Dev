@@ -1827,7 +1827,10 @@ button.app-primary-action {
   border-bottom: 1px solid var(--line);
   display: grid;
   gap: 7px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.58fr) minmax(0, 0.78fr) minmax(0, 1fr) 32px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.58fr) minmax(
+      0,
+      0.78fr
+    ) minmax(0, 1fr) 32px;
   min-height: 52px;
   padding: 7px 0;
 }
@@ -2159,7 +2162,11 @@ button.app-primary-action {
 }
 
 .checkout-success-heart span {
-  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.72), transparent 42%);
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 255, 255, 0.72),
+    transparent 42%
+  );
   border-radius: 50%;
   filter: blur(1px);
   height: 62px;
@@ -2225,7 +2232,11 @@ button.app-primary-action {
 .profile-hero {
   align-items: start;
   background:
-    radial-gradient(circle at 86% 18%, rgba(239, 123, 232, 0.42), transparent 86px),
+    radial-gradient(
+      circle at 86% 18%,
+      rgba(239, 123, 232, 0.42),
+      transparent 86px
+    ),
     var(--lime);
   border-radius: 0 0 8px 8px;
   display: grid;
@@ -2532,44 +2543,110 @@ button.app-primary-action {
 .ticket-list {
   align-content: start;
   display: grid;
-  gap: 12px;
+  gap: 14px;
   grid-auto-rows: max-content;
 }
 
-.ticket-wallet-card {
-  align-items: center;
+.my-tickets-screen .my-tickets-header {
+  min-height: auto;
+  padding: 34px 14px 24px;
+}
+
+.ticket-tabs {
   background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: 0 14px 32px rgba(21, 23, 17, 0.08);
+  border-radius: 999px;
   display: grid;
-  gap: 10px;
-  grid-template-columns: 54px minmax(0, 1fr) 34px;
-  min-height: 98px;
-  padding: 10px;
+  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: -6px;
+  padding: 4px;
+}
+
+.ticket-tab-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 900;
+  min-height: 34px;
+  padding: 0 12px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ticket-tab-button-active {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+.ticket-wallet-card {
+  align-items: stretch;
+  background: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 106px minmax(0, 1fr);
+  min-height: 96px;
+  padding: 0;
+  text-decoration: none;
+}
+
+.ticket-wallet-card:active {
+  transform: scale(0.99);
+}
+
+.ticket-wallet-cover {
+  align-items: center;
+  aspect-ratio: 1.18;
+  background:
+    radial-gradient(
+      circle at 76% 14%,
+      rgba(239, 123, 232, 0.65),
+      transparent 74px
+    ),
+    linear-gradient(135deg, var(--blue), #161812 82%);
+  border-radius: 8px;
+  color: var(--lime);
+  display: grid;
+  justify-items: center;
+  overflow: hidden;
+}
+
+.ticket-wallet-cover img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .ticket-wallet-content {
+  align-content: center;
   display: grid;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
+  padding: 3px 0;
 }
 
 .ticket-wallet-card h2 {
-  color: #6b38ff;
-  font-size: 1rem;
-  line-height: 1.05;
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.12;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .ticket-wallet-card p {
   align-items: center;
   color: var(--muted);
   display: flex;
-  font-size: 0.78rem;
-  gap: 4px;
+  font-size: 0.74rem;
+  font-weight: 750;
+  gap: 5px;
   line-height: 1.2;
   min-width: 0;
   overflow: hidden;
@@ -2577,33 +2654,49 @@ button.app-primary-action {
   white-space: nowrap;
 }
 
-.ticket-wallet-art {
-  align-items: center;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(239, 123, 232, 0.95),
-      rgba(239, 123, 232, 0.42)
-    ),
-    var(--lime);
-  border-radius: 8px;
-  color: #ffffff;
-  display: inline-flex;
-  height: 54px;
-  justify-content: center;
-  width: 54px;
-}
-
-.ticket-wallet-qr {
+.ticket-count-pill {
+  background: var(--lime);
+  border-radius: 999px;
   color: var(--ink);
-}
-
-.ticket-wallet-art-blue {
-  background: var(--blue);
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 950;
+  justify-self: start;
+  line-height: 1;
+  padding: 6px 9px;
 }
 
 .ticket-wallet-card-muted {
-  opacity: 0.78;
+  opacity: 0.72;
+}
+
+.ticket-wallet-card-used .ticket-wallet-cover,
+.ticket-wallet-card-cancelled .ticket-wallet-cover {
+  filter: grayscale(0.95);
+}
+
+.ticket-tab-empty {
+  align-content: center;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  min-height: 180px;
+  padding: 22px;
+}
+
+.ticket-tab-empty strong {
+  color: var(--ink);
+  font-size: 1.08rem;
+  line-height: 1.12;
+}
+
+.ticket-tab-empty p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  max-width: 32ch;
 }
 
 .lime-compact-header {
@@ -2633,7 +2726,7 @@ button.app-primary-action {
 }
 
 .ticket-pass-cover {
-  aspect-ratio: 0.92;
+  aspect-ratio: 1.36;
   background: #151711;
   color: #ffffff;
   display: grid;
@@ -2651,7 +2744,11 @@ button.app-primary-action {
 }
 
 .ticket-pass-cover::after {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02) 35%, rgba(0, 0, 0, 0.78) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.02) 35%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
   content: "";
   inset: 0;
   position: absolute;
@@ -2660,7 +2757,11 @@ button.app-primary-action {
 .ticket-pass-cover-fallback {
   align-items: center;
   background:
-    radial-gradient(circle at 80% 16%, rgba(239, 123, 232, 0.56), transparent 120px),
+    radial-gradient(
+      circle at 80% 16%,
+      rgba(239, 123, 232, 0.56),
+      transparent 120px
+    ),
     linear-gradient(135deg, var(--blue), #151711 70%);
   color: var(--lime);
   display: grid;

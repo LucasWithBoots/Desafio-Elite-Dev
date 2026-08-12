@@ -1,12 +1,15 @@
-import { CalendarDays, MapPin, QrCode, Ticket } from "lucide-react";
+import { CalendarDays, MapPin, Ticket } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMyTickets } from "@/features/tickets/hooks/useMyTickets";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { routes, ticketDetailsPath } from "@/shared/constants/routes";
-import { formatDateTime } from "@/shared/lib/formatters";
+
+type TicketTab = "active" | "used";
 
 export function MyTicketsPage() {
+  const [selectedTab, setSelectedTab] = useState<TicketTab>("active");
   const { data: tickets, isLoading, error } = useMyTickets();
 
   if (isLoading) {
@@ -36,50 +39,96 @@ export function MyTicketsPage() {
     );
   }
 
+  const activeTickets = tickets.filter((ticket) => ticket.status === "active");
+  const usedTickets = tickets.filter((ticket) => ticket.status !== "active");
+  const visibleTickets = selectedTab === "active" ? activeTickets : usedTickets;
+
   return (
     <section className="app-screen my-tickets-screen">
-      <header className="lime-page-header">
-        <span className="eyebrow">Minha area</span>
-        <h1>Meus ingressos</h1>
-        <p>Acesse o QR, codigo manual e link compartilhavel.</p>
+      <header className="compact-header lime-compact-header my-tickets-header">
+        <span />
+        <strong>Tickets</strong>
+        <span />
       </header>
 
-      <div className="ticket-list">
-        {tickets.map((ticket) => (
-          <Link
-            className={`ticket-wallet-card ${ticket.status !== "active" ? "ticket-wallet-card-muted" : ""}`}
-            key={ticket.id}
-            to={ticketDetailsPath(ticket.id)}
-          >
-            <div className="ticket-wallet-art">
-              <Ticket size={26} aria-hidden="true" />
-            </div>
-            <div className="ticket-wallet-content">
-              <span className="app-pill">{getStatusLabel(ticket.status)}</span>
-              <h2>{ticket.event.title}</h2>
-              <p>
-                <CalendarDays size={14} aria-hidden="true" />
-                {formatDateTime(ticket.event.startsAt)}
-              </p>
-              <p>
-                <MapPin size={14} aria-hidden="true" />
-                {ticket.event.venueName}
-              </p>
-            </div>
-            <QrCode className="ticket-wallet-qr" size={34} aria-hidden="true" />
-          </Link>
-        ))}
+      <div className="ticket-tabs" role="tablist" aria-label="Filtrar ingressos">
+        <button
+          className={`ticket-tab-button${selectedTab === "active" ? " ticket-tab-button-active" : ""}`}
+          type="button"
+          role="tab"
+          aria-selected={selectedTab === "active"}
+          onClick={() => setSelectedTab("active")}
+        >
+          Ativos
+        </button>
+        <button
+          className={`ticket-tab-button${selectedTab === "used" ? " ticket-tab-button-active" : ""}`}
+          type="button"
+          role="tab"
+          aria-selected={selectedTab === "used"}
+          onClick={() => setSelectedTab("used")}
+        >
+          Usados
+        </button>
       </div>
+
+      {visibleTickets.length ? (
+        <div className="ticket-list">
+          {visibleTickets.map((ticket) => (
+            <Link
+              className={`ticket-wallet-card ticket-wallet-card-${ticket.status}`}
+              key={ticket.id}
+              to={ticketDetailsPath(ticket.id)}
+            >
+              <div className="ticket-wallet-cover">
+                {ticket.event.imageUrl ? (
+                  <img src={ticket.event.imageUrl} alt="" />
+                ) : (
+                  <Ticket size={28} aria-hidden="true" />
+                )}
+              </div>
+              <div className="ticket-wallet-content">
+                <h2>{ticket.event.title}</h2>
+                <p>
+                  <MapPin size={13} aria-hidden="true" />
+                  {ticket.event.venueName}
+                </p>
+                <p>
+                  <CalendarDays size={13} aria-hidden="true" />
+                  {formatWalletDate(ticket.event.startsAt)}
+                </p>
+                <span className="ticket-count-pill">{getTicketCountLabel(1)}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="ticket-tab-empty">
+          <strong>
+            {selectedTab === "active"
+              ? "Nenhum ticket ativo"
+              : "Nenhum ticket usado"}
+          </strong>
+          <p>
+            {selectedTab === "active"
+              ? "Os ingressos aprovados aparecem aqui antes da entrada."
+              : "Depois da validacao na portaria, o ticket vem para esta aba."}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
 
-function getStatusLabel(status: string) {
-  const labels = {
-    active: "Ativo",
-    used: "Utilizado",
-    cancelled: "Cancelado",
-  } as const;
+function formatWalletDate(value: string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
 
-  return labels[status as keyof typeof labels] ?? status;
+function getTicketCountLabel(count: number) {
+  return `${count} ${count === 1 ? "ticket" : "tickets"}`;
 }
