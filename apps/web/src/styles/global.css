@@ -4625,6 +4625,9 @@ button.app-primary-action {
 
   .page-shell-client-home .client-location {
     color: #ffffff;
+    align-self: start;
+    justify-self: start;
+    margin-top: 10px;
   }
 
   .page-shell-client-home .notification-button {
