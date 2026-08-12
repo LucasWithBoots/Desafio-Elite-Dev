@@ -14,7 +14,6 @@ Projeto para o Desafio Elite Dev 2026. O objetivo e criar uma plataforma onde or
 
 ```bash
 npm install
-copy .env.example .env
 docker compose up -d postgres
 npm run db:push -w @elite/api
 npm run db:seed -w @elite/api
@@ -50,12 +49,12 @@ docs/       Decisoes, fluxo de demonstracao e notas de produto
 
 Estes usuarios sao criados pelo seed:
 
-| Papel | Email | Senha |
-| --- | --- | --- |
+| Papel       | Email                 | Senha  |
+| ----------- | --------------------- | ------ |
 | Organizador | organizador@elite.dev | 123456 |
-| Cliente | cliente@elite.dev | 123456 |
-| Cliente 2 | cliente2@elite.dev | 123456 |
-| Portaria | portaria@elite.dev | 123456 |
+| Cliente     | cliente@elite.dev     | 123456 |
+| Cliente 2   | cliente2@elite.dev    | 123456 |
+| Portaria    | portaria@elite.dev    | 123456 |
 
 ## Fluxo De Demonstracao
 
