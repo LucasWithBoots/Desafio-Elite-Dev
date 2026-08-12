@@ -262,6 +262,79 @@ export async function registerEventRoutes(server: FastifyInstance) {
     return reply.status(201).send(toEventDto(createdEvent));
   });
 
+  server.patch("/events/:eventId", async (request) => {
+    const session = requireAuthSession(request);
+    requireRoles(session, ["ORGANIZER"]);
+
+    const parsedParams = paramsSchema.safeParse(request.params);
+    const parsedBody = createEventBodySchema.safeParse(request.body);
+
+    if (!parsedParams.success) {
+      throw badRequest("Invalid event id");
+    }
+
+    if (!parsedBody.success) {
+      throw badRequest("Invalid event payload");
+    }
+
+    const body = parsedBody.data;
+    const updatedEvent = await prisma.$transaction(async (transaction) => {
+      const event = await transaction.event.findFirst({
+        where: {
+          id: parsedParams.data.eventId,
+          organizerId: session.userId,
+        },
+      });
+
+      if (!event) {
+        throw notFound("Event not found");
+      }
+
+      if (event.status !== EventStatus.DRAFT) {
+        throw badRequest("Only draft events can be edited");
+      }
+
+      await transaction.seat.deleteMany({
+        where: { eventId: event.id },
+      });
+
+      const updated = await transaction.event.update({
+        where: { id: event.id },
+        data: {
+          title: body.title,
+          description: body.description,
+          about: body.about,
+          imageUrl: body.imageUrl,
+          startsAt: getStartsAt(body.date, body.time),
+          venueName: body.venueName,
+          address: body.address,
+          city: body.city,
+          priceCents: toCents(body.price),
+          currency: body.currency,
+          capacity: body.capacity,
+          seatingMode: seatingModeMap[body.seatingMode],
+          externalSource: body.source,
+          externalId: body.externalId,
+          category: body.category,
+          genre: body.genre,
+        },
+      });
+
+      if (updated.seatingMode === SeatingMode.SEAT_MAP) {
+        await transaction.seat.createMany({
+          data: makeSeats(updated.id, updated.capacity),
+        });
+      }
+
+      return transaction.event.findUniqueOrThrow({
+        where: { id: updated.id },
+        include: eventInclude,
+      });
+    });
+
+    return toEventDto(updatedEvent);
+  });
+
   server.post("/events/:eventId/publish", async (request) => {
     const session = requireAuthSession(request);
     requireRoles(session, ["ORGANIZER"]);

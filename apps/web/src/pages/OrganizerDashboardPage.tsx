@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BadgeCheck, CalendarDays, Ticket, TrendingUp } from "lucide-react";
+import { BadgeCheck, CalendarDays, Pencil, Ticket, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { eventManagementService } from "@/features/event-management/services/eventManagementService";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { LoadingState } from "@/shared/components/LoadingState";
-import { routes } from "@/shared/constants/routes";
+import { organizerEditEventPath, routes } from "@/shared/constants/routes";
 
 export function OrganizerDashboardPage() {
   const queryClient = useQueryClient();
@@ -83,14 +83,20 @@ export function OrganizerDashboardPage() {
               </p>
             </div>
             {event.status === "draft" ? (
-              <button
-                className="icon-text-button"
-                type="button"
-                disabled={publishMutation.isPending}
-                onClick={() => publishMutation.mutate(event.id)}
-              >
-                Publicar
-              </button>
+              <div className="organizer-event-actions">
+                <Link className="icon-text-button" to={organizerEditEventPath(event.id)}>
+                  <Pencil size={14} aria-hidden="true" />
+                  Editar
+                </Link>
+                <button
+                  className="icon-text-button"
+                  type="button"
+                  disabled={publishMutation.isPending}
+                  onClick={() => publishMutation.mutate(event.id)}
+                >
+                  Publicar
+                </button>
+              </div>
             ) : (
               <BadgeCheck size={22} aria-hidden="true" />
             )}

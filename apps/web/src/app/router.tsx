@@ -126,6 +126,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: routes.organizerEditEvent,
+        element: (
+          <RoleRoute allowedRoles={["organizer"]}>
+            <OrganizerEventFormPage />
+          </RoleRoute>
+        ),
+      },
+      {
         path: routes.gateValidation,
         element: (
           <RoleRoute allowedRoles={["gate"]}>

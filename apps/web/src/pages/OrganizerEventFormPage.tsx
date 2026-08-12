@@ -1,23 +1,84 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, ImagePlus, MapPin, Search } from "lucide-react";
 import type { FormEvent } from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import type { Event, ExternalEventSource, SeatingMode } from "@/entities/event/model";
 import { eventManagementService } from "@/features/event-management/services/eventManagementService";
 import type { TicketmasterCatalogItem } from "@/features/event-management/types";
-import { ApiError } from "@/shared/api/http-client";
 import { Button } from "@/shared/components/Button";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { Input } from "@/shared/components/Input";
+import { LoadingState } from "@/shared/components/LoadingState";
 import { routes } from "@/shared/constants/routes";
 import { formatCurrency, formatDateTime } from "@/shared/lib/formatters";
 
+interface ManualEventFormValues {
+  source: ExternalEventSource;
+  externalId: string;
+  title: string;
+  description: string;
+  about: string;
+  imageUrl: string;
+  venueName: string;
+  address: string;
+  city: string;
+  category: string;
+  genre: string;
+  date: string;
+  time: string;
+  capacity: string;
+  price: string;
+  currency: string;
+  seatingMode: SeatingMode;
+}
+
+const initialManualForm: ManualEventFormValues = {
+  source: "manual",
+  externalId: "",
+  title: "",
+  description: "",
+  about: "",
+  imageUrl: "",
+  venueName: "",
+  address: "",
+  city: "",
+  category: "",
+  genre: "",
+  date: "",
+  time: "",
+  capacity: "",
+  price: "",
+  currency: "BRL",
+  seatingMode: "seat-map",
+};
+
 export function OrganizerEventFormPage() {
+  const { eventId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const manualPanelRef = useRef<HTMLElement | null>(null);
+  const isEditMode = Boolean(eventId);
   const [keyword, setKeyword] = useState("");
   const [catalogFeedback, setCatalogFeedback] = useState<string | null>(null);
   const [manualFeedback, setManualFeedback] = useState<string | null>(null);
   const [catalogResults, setCatalogResults] = useState<TicketmasterCatalogItem[]>([]);
+  const [manualForm, setManualForm] = useState<ManualEventFormValues>(initialManualForm);
+  const {
+    data: editingEvent,
+    isLoading: isEditingEventLoading,
+    error: editingEventError,
+  } = useQuery({
+    queryKey: ["organizer", "events", eventId],
+    queryFn: () => eventManagementService.getEvent(eventId ?? ""),
+    enabled: isEditMode,
+  });
+
+  useEffect(() => {
+    if (editingEvent) {
+      setManualForm(toManualEventForm(editingEvent));
+    }
+  }, [editingEvent]);
 
   const searchMutation = useMutation({
     mutationFn: eventManagementService.searchTicketmasterEvents,
@@ -47,36 +108,16 @@ export function OrganizerEventFormPage() {
     },
   });
 
-  const importMutation = useMutation({
-    mutationFn: (event: TicketmasterCatalogItem) =>
-      eventManagementService.importTicketmasterEvent(event.externalId, {
-        capacity: 100,
-        price: event.minPrice ?? 0,
-        currency: event.currency ?? "BRL",
-        seatingMode: "seat-map",
-        publish: false,
-      }),
-    onMutate: () => {
-      setCatalogFeedback(null);
-    },
-    onSuccess: async (response) => {
+  const updateMutation = useMutation({
+    mutationFn: (values: Parameters<typeof eventManagementService.updateEvent>[1]) =>
+      eventManagementService.updateEvent(eventId ?? "", values),
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["organizer", "events"] });
-      setCatalogFeedback(
-        response.alreadyImported
-          ? "Evento ja estava importado como rascunho."
-          : "Evento importado como rascunho.",
-      );
       navigate(routes.organizerDashboard);
     },
     onError: (error) => {
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
-        setCatalogFeedback("Sessao expirada. Entre novamente como organizador para importar.");
-        navigate(routes.login);
-        return;
-      }
-
-      setCatalogFeedback(
-        error instanceof Error ? error.message : "Nao foi possivel importar o evento.",
+      setManualFeedback(
+        error instanceof Error ? error.message : "Nao foi possivel editar o evento.",
       );
     },
   });
@@ -90,35 +131,131 @@ export function OrganizerEventFormPage() {
     }
   }
 
+  function updateManualField<TKey extends keyof ManualEventFormValues>(
+    field: TKey,
+    value: ManualEventFormValues[TKey],
+  ) {
+    setManualForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function handleCatalogImport(event: TicketmasterCatalogItem) {
+    const { date, time } = getDateTimeFields(event.startsAt);
+
+    setManualForm({
+      source: "ticketmaster",
+      externalId: event.externalId,
+      title: event.title,
+      description: "",
+      about: event.description ?? "",
+      imageUrl: event.imageUrl ?? "",
+      venueName: event.venueName ?? "",
+      address: event.address ?? "",
+      city: event.city ?? "",
+      category: event.category ?? "",
+      genre: event.genre ?? "",
+      date,
+      time,
+      capacity: "",
+      price: event.minPrice !== undefined ? String(event.minPrice) : "",
+      currency: event.currency ?? "BRL",
+      seatingMode: "seat-map",
+    });
+    setManualFeedback(null);
+    setCatalogFeedback("Dados enviados para o formulario. Revise antes de salvar.");
+    window.setTimeout(() => {
+      manualPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }
+
   function handleManualSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setManualFeedback(null);
 
-    const formData = new FormData(event.currentTarget);
-    createMutation.mutate({
-      source: "manual",
-      title: String(formData.get("title") ?? ""),
-      description: String(formData.get("description") ?? ""),
-      about: String(formData.get("about") ?? ""),
-      imageUrl: String(formData.get("imageUrl") ?? "") || undefined,
-      venueName: String(formData.get("venueName") ?? ""),
-      address: String(formData.get("address") ?? ""),
-      city: String(formData.get("city") ?? ""),
-      date: String(formData.get("date") ?? ""),
-      time: String(formData.get("time") ?? ""),
-      capacity: Number(formData.get("capacity") ?? 100),
-      price: Number(formData.get("price") ?? 0),
-      currency: "BRL",
-      seatingMode: "seat-map",
-      category: String(formData.get("category") ?? ""),
-    });
+    const capacity = Number(manualForm.capacity);
+    const price = Number(manualForm.price || 0);
+
+    if (!manualForm.capacity || !Number.isFinite(capacity) || capacity <= 0) {
+      setManualFeedback("Informe uma capacidade valida para salvar o evento.");
+      return;
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      setManualFeedback("Informe um preco valido para salvar o evento.");
+      return;
+    }
+
+    const payload = {
+      source: manualForm.source,
+      externalId: manualForm.externalId || undefined,
+      title: manualForm.title,
+      description: manualForm.description || undefined,
+      about: manualForm.about || undefined,
+      imageUrl: manualForm.imageUrl || undefined,
+      venueName: manualForm.venueName,
+      address: manualForm.address || undefined,
+      city: manualForm.city || undefined,
+      date: manualForm.date,
+      time: manualForm.time,
+      capacity,
+      price,
+      currency: manualForm.currency || "BRL",
+      seatingMode: manualForm.seatingMode,
+      category: manualForm.category || undefined,
+      genre: manualForm.genre || undefined,
+    };
+
+    if (isEditMode) {
+      updateMutation.mutate(payload);
+      return;
+    }
+
+    createMutation.mutate(payload);
+  }
+
+  if (isEditMode && isEditingEventLoading) {
+    return <LoadingState />;
+  }
+
+  if (isEditMode && (editingEventError || !editingEvent)) {
+    return (
+      <EmptyState
+        title="Rascunho nao encontrado"
+        description="Volte para seus eventos e escolha outro rascunho para editar."
+        action={
+          <Link className="button button-primary" to={routes.organizerDashboard}>
+            Voltar
+          </Link>
+        }
+      />
+    );
+  }
+
+  if (isEditMode && editingEvent?.status !== "draft") {
+    return (
+      <EmptyState
+        title="Evento ja publicado"
+        description="Apenas eventos em rascunho podem ser editados."
+        action={
+          <Link className="button button-primary" to={routes.organizerDashboard}>
+            Voltar
+          </Link>
+        }
+      />
+    );
   }
 
   return (
     <section className="app-screen organizer-form-screen">
       <header className="lime-page-header organizer-hero">
-        <h1>Criar evento</h1>
-        <p>Busque na Ticketmaster ou crie manualmente quando o catalogo nao resolver.</p>
+        <h1>{isEditMode ? "Editar rascunho" : "Criar evento"}</h1>
+        <p>
+          {isEditMode
+            ? "Ajuste os dados antes de publicar seu evento."
+            : "Busque na Ticketmaster ou crie manualmente quando o catalogo nao resolver."}
+        </p>
       </header>
 
       <div className="form-layout">
@@ -150,59 +287,145 @@ export function OrganizerEventFormPage() {
 
           {catalogResults.length ? (
             <div className="catalog-result-list">
-              {catalogResults.map((event) => {
-                const isImportingThisEvent =
-                  importMutation.isPending &&
-                  importMutation.variables?.externalId === event.externalId;
-
-                return (
-                  <article className="catalog-result-card" key={event.externalId}>
-                    {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
-                    <div>
-                      <strong>{event.title}</strong>
-                      <span>{event.venueName ?? "Local a definir"}</span>
-                      <span>
-                        {event.startsAt ? formatDateTime(event.startsAt) : "Data a definir"}
-                      </span>
-                      <span>
-                        {formatCurrency(event.minPrice ?? 0, event.currency ?? "BRL")}
-                      </span>
-                    </div>
-                    <button
-                      className="icon-text-button"
-                      type="button"
-                      aria-busy={isImportingThisEvent}
-                      disabled={importMutation.isPending}
-                      onClick={() => importMutation.mutate(event)}
-                    >
-                      {isImportingThisEvent ? "Importando..." : "Importar"}
-                    </button>
-                  </article>
-                );
-              })}
+              {catalogResults.map((event) => (
+                <article className="catalog-result-card" key={event.externalId}>
+                  {event.imageUrl ? <img src={event.imageUrl} alt="" /> : null}
+                  <div>
+                    <strong>{event.title}</strong>
+                    <span>{event.venueName ?? "Local a definir"}</span>
+                    <span>
+                      {event.startsAt ? formatDateTime(event.startsAt) : "Data a definir"}
+                    </span>
+                    <span>
+                      {formatCurrency(event.minPrice ?? 0, event.currency ?? "BRL")}
+                    </span>
+                  </div>
+                  <button
+                    className="icon-text-button"
+                    type="button"
+                    onClick={() => handleCatalogImport(event)}
+                  >
+                    Importar
+                  </button>
+                </article>
+              ))}
             </div>
           ) : null}
         </section>
 
-        <section className="panel manual-event-panel organizer-card">
+        <section className="panel manual-event-panel organizer-card" ref={manualPanelRef}>
           <div className="organizer-card-heading">
             <span className="panel-icon">
               <ImagePlus size={20} aria-hidden="true" />
             </span>
             <div>
               <span className="app-pill">Rascunho</span>
-              <h2>Criar manualmente</h2>
+              <h2>{isEditMode ? "Editar dados" : "Criar manualmente"}</h2>
             </div>
           </div>
           <form className="stacked-form organizer-manual-form" onSubmit={handleManualSubmit}>
-            <Input label="Titulo" name="title" placeholder="Nome do evento" required />
-            <Input label="Descricao curta" name="description" placeholder="Resumo para cards" />
-            <Input label="Sobre" name="about" placeholder="Descricao maior do evento" />
-            <Input label="Imagem" name="imageUrl" placeholder="https://..." />
-            <Input label="Local" name="venueName" placeholder="Nome do local" required />
-            <Input label="Endereco" name="address" placeholder="Rua, numero" />
-            <Input label="Cidade" name="city" placeholder="Sao Paulo" />
-            <Input label="Categoria" name="category" placeholder="Shows, Teatro, Art" />
+            <Input
+              label="Titulo"
+              name="title"
+              placeholder="Nome do evento"
+              required
+              value={manualForm.title}
+              onChange={(event) => updateManualField("title", event.target.value)}
+            />
+            <Input
+              label="Descricao curta"
+              name="description"
+              placeholder="Resumo para cards"
+              value={manualForm.description}
+              onChange={(event) => updateManualField("description", event.target.value)}
+            />
+            <Input
+              label="Sobre"
+              name="about"
+              placeholder="Descricao maior do evento"
+              value={manualForm.about}
+              onChange={(event) => updateManualField("about", event.target.value)}
+            />
+            <Input
+              label="Imagem"
+              name="imageUrl"
+              placeholder="https://..."
+              value={manualForm.imageUrl}
+              onChange={(event) => updateManualField("imageUrl", event.target.value)}
+            />
+            <Input
+              label="Local"
+              name="venueName"
+              placeholder="Nome do local"
+              required
+              value={manualForm.venueName}
+              onChange={(event) => updateManualField("venueName", event.target.value)}
+            />
+            <Input
+              label="Endereco"
+              name="address"
+              placeholder="Rua, numero"
+              value={manualForm.address}
+              onChange={(event) => updateManualField("address", event.target.value)}
+            />
+            <Input
+              label="Cidade"
+              name="city"
+              placeholder="Sao Paulo"
+              value={manualForm.city}
+              onChange={(event) => updateManualField("city", event.target.value)}
+            />
+            <Input
+              label="Categoria"
+              name="category"
+              placeholder="Shows, Teatro, Art"
+              value={manualForm.category}
+              onChange={(event) => updateManualField("category", event.target.value)}
+            />
+            <Input
+              label="Genero"
+              name="genre"
+              placeholder="Rock, Pop, Theatre"
+              value={manualForm.genre}
+              onChange={(event) => updateManualField("genre", event.target.value)}
+            />
+            <fieldset className="organizer-seating-picker">
+              <legend>Tipo de ingresso</legend>
+              <div className="organizer-seating-options">
+                <label
+                  className={`organizer-seating-option ${
+                    manualForm.seatingMode === "seat-map" ? "organizer-seating-option-active" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="seatingMode"
+                    value="seat-map"
+                    checked={manualForm.seatingMode === "seat-map"}
+                    onChange={() => updateManualField("seatingMode", "seat-map")}
+                  />
+                  <strong>Assentos marcados</strong>
+                  <span>O comprador escolhe cadeiras no mapa.</span>
+                </label>
+                <label
+                  className={`organizer-seating-option ${
+                    manualForm.seatingMode === "general-admission"
+                      ? "organizer-seating-option-active"
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="seatingMode"
+                    value="general-admission"
+                    checked={manualForm.seatingMode === "general-admission"}
+                    onChange={() => updateManualField("seatingMode", "general-admission")}
+                  />
+                  <strong>Entrada geral</strong>
+                  <span>O comprador escolhe a quantidade.</span>
+                </label>
+              </div>
+            </fieldset>
             <div className="inline-form-grid">
               <span>
                 <CalendarDays size={16} aria-hidden="true" />
@@ -213,12 +436,48 @@ export function OrganizerEventFormPage() {
                 Localizacao
               </span>
             </div>
-            <Input label="Data" name="date" type="date" required />
-            <Input label="Horario" name="time" type="time" required />
-            <Input label="Capacidade" name="capacity" type="number" min="1" defaultValue={100} />
-            <Input label="Preco" name="price" type="number" min="0" step="0.01" required />
-            <Button disabled={createMutation.isPending}>
-              {createMutation.isPending ? "Salvando..." : "Salvar rascunho"}
+            <Input
+              label="Data"
+              name="date"
+              type="date"
+              required
+              value={manualForm.date}
+              onChange={(event) => updateManualField("date", event.target.value)}
+            />
+            <Input
+              label="Horario"
+              name="time"
+              type="time"
+              required
+              value={manualForm.time}
+              onChange={(event) => updateManualField("time", event.target.value)}
+            />
+            <Input
+              label="Capacidade"
+              name="capacity"
+              type="number"
+              min="1"
+              placeholder="Ex.: 100"
+              required
+              value={manualForm.capacity}
+              onChange={(event) => updateManualField("capacity", event.target.value)}
+            />
+            <Input
+              label="Preco"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              value={manualForm.price}
+              onChange={(event) => updateManualField("price", event.target.value)}
+            />
+            <Button disabled={createMutation.isPending || updateMutation.isPending}>
+              {createMutation.isPending || updateMutation.isPending
+                ? "Salvando..."
+                : isEditMode
+                  ? "Salvar alteracoes"
+                  : "Salvar rascunho"}
             </Button>
           </form>
         </section>
@@ -227,4 +486,41 @@ export function OrganizerEventFormPage() {
       {manualFeedback ? <p className="form-feedback">{manualFeedback}</p> : null}
     </section>
   );
+}
+
+function getDateTimeFields(startsAt?: string) {
+  if (!startsAt) {
+    return { date: "", time: "" };
+  }
+
+  const [date = "", rawTime = ""] = startsAt.split("T");
+
+  return {
+    date,
+    time: rawTime.slice(0, 5),
+  };
+}
+
+function toManualEventForm(event: Event): ManualEventFormValues {
+  const { date, time } = getDateTimeFields(event.startsAt);
+
+  return {
+    source: event.externalSource ?? "manual",
+    externalId: event.externalId ?? "",
+    title: event.title,
+    description: event.description ?? "",
+    about: event.about ?? "",
+    imageUrl: event.imageUrl ?? "",
+    venueName: event.venueName,
+    address: event.address ?? "",
+    city: event.city ?? "",
+    category: event.category ?? "",
+    genre: event.genre ?? "",
+    date,
+    time,
+    capacity: String(event.capacity),
+    price: String(event.price),
+    currency: event.currency,
+    seatingMode: event.seatingMode,
+  };
 }

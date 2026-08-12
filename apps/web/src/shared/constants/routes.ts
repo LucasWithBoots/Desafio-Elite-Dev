@@ -13,6 +13,7 @@ export const routes = {
   ticketDetails: "/my-tickets/:ticketId",
   organizerDashboard: "/organizer",
   organizerNewEvent: "/organizer/events/new",
+  organizerEditEvent: "/organizer/events/:eventId/edit",
   gateValidation: "/gate",
 } as const;
 
@@ -26,4 +27,8 @@ export function checkoutPath(eventId: string) {
 
 export function ticketDetailsPath(ticketId: string) {
   return `/my-tickets/${ticketId}`;
+}
+
+export function organizerEditEventPath(eventId: string) {
+  return `/organizer/events/${eventId}/edit`;
 }

@@ -7,9 +7,20 @@ export const eventManagementService = {
     return httpClient<Event[]>("/organizer/events");
   },
 
+  getEvent(eventId: string) {
+    return httpClient<Event>(`/events/${eventId}`);
+  },
+
   createEvent(values: EventFormValues) {
     return httpClient<Event>("/events", {
       method: "POST",
+      body: JSON.stringify(values),
+    });
+  },
+
+  updateEvent(eventId: string, values: EventFormValues) {
+    return httpClient<Event>(`/events/${eventId}`, {
+      method: "PATCH",
       body: JSON.stringify(values),
     });
   },
