@@ -4203,3 +4203,244 @@ button.app-primary-action {
     grid-column: auto;
   }
 }
+
+.client-hero-image,
+.client-hero-shade,
+.desktop-hero-content,
+.home-filter-title {
+  display: none;
+}
+
+.home-filter-panel {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 821px) {
+  .app-shell-customer .topbar,
+  .app-shell-guest .topbar {
+    backdrop-filter: blur(22px) saturate(1.3);
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+    box-shadow: 0 20px 60px rgba(21, 23, 17, 0.12);
+    margin: 18px auto 0;
+    max-width: min(1180px, calc(100% - 48px));
+    padding: 10px 14px 10px 18px;
+    top: 16px;
+  }
+
+  .app-shell-customer .brand-mark,
+  .app-shell-guest .brand-mark {
+    border-radius: 999px;
+    height: 38px;
+    width: 38px;
+  }
+
+  .app-shell-customer .brand small,
+  .app-shell-guest .brand small {
+    display: none;
+  }
+
+  .app-shell-customer .main-nav,
+  .app-shell-guest .main-nav {
+    background: rgba(255, 255, 255, 0.38);
+    border: 1px solid rgba(21, 23, 17, 0.08);
+    border-radius: 999px;
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .app-shell-customer .nav-link,
+  .app-shell-guest .nav-link {
+    border-radius: 999px;
+    color: var(--ink);
+    font-weight: 900;
+    min-height: 38px;
+    padding: 0 13px;
+  }
+
+  .app-shell-customer .nav-link.active,
+  .app-shell-customer .nav-link:hover,
+  .app-shell-guest .nav-link.active,
+  .app-shell-guest .nav-link:hover {
+    background: var(--lime);
+    color: var(--ink);
+  }
+
+  .page-shell-client-home {
+    max-width: none;
+    padding: 24px clamp(20px, 4vw, 48px) 72px;
+  }
+
+  .page-shell-client-home .client-home {
+    gap: 26px;
+    max-width: 1280px;
+  }
+
+  .page-shell-client-home .client-hero {
+    align-content: stretch;
+    border-radius: 28px;
+    grid-template-areas:
+      "location notification"
+      "desktop desktop";
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: clamp(430px, 58vh, 660px);
+    overflow: hidden;
+    padding: 28px;
+    position: relative;
+  }
+
+  .page-shell-client-home .client-hero-image {
+    display: block;
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+
+  .page-shell-client-home .client-hero-shade {
+    background:
+      linear-gradient(180deg, rgba(13, 16, 14, 0.08), rgba(13, 16, 14, 0.78)),
+      linear-gradient(90deg, rgba(21, 23, 17, 0.72), rgba(21, 23, 17, 0.08) 62%);
+    display: block;
+    inset: 0;
+    position: absolute;
+  }
+
+  .page-shell-client-home .client-location,
+  .page-shell-client-home .notification-button,
+  .page-shell-client-home .desktop-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-shell-client-home .client-location {
+    color: #ffffff;
+  }
+
+  .page-shell-client-home .notification-button {
+    backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .page-shell-client-home .client-avatar,
+  .page-shell-client-home .client-greeting {
+    display: none;
+  }
+
+  .desktop-hero-content {
+    align-self: end;
+    color: #ffffff;
+    display: grid;
+    gap: 14px;
+    grid-area: desktop;
+    max-width: 640px;
+  }
+
+  .desktop-hero-content h1 {
+    color: #ffffff;
+    font-size: 3.25rem;
+    line-height: 0.96;
+    max-width: 13ch;
+  }
+
+  .desktop-hero-content p {
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 1rem;
+    max-width: 58ch;
+  }
+
+  .desktop-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .desktop-hero-actions .button {
+    border-radius: 999px;
+    min-width: 140px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .home-filter-panel {
+    align-items: center;
+    backdrop-filter: blur(18px) saturate(1.2);
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(21, 23, 17, 0.08);
+    border-radius: 999px;
+    box-shadow: 0 16px 44px rgba(21, 23, 17, 0.08);
+    display: grid;
+    gap: 16px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 8px 10px 8px 18px;
+  }
+
+  .home-filter-title {
+    color: var(--ink);
+    display: inline-flex;
+    font-size: 0.9rem;
+    font-weight: 900;
+  }
+
+  .page-shell-client-home .category-rail {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin: 0;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .page-shell-client-home .category-chip {
+    background: rgba(255, 255, 255, 0.74);
+    border-color: rgba(21, 23, 17, 0.12);
+    height: 42px;
+    min-height: 42px;
+  }
+
+  .page-shell-client-home .category-chip-active {
+    background: var(--pink);
+    border-color: var(--pink);
+  }
+
+  .page-shell-client-home .client-main-grid {
+    gap: clamp(24px, 4vw, 52px);
+    grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1fr);
+  }
+
+  .page-shell-client-home .featured-section {
+    align-content: start;
+  }
+
+  .page-shell-client-home .featured-event-card {
+    aspect-ratio: 0.82;
+    min-height: 360px;
+  }
+
+  .page-shell-client-home .recommendation-section {
+    grid-column: 2;
+    grid-row: auto;
+  }
+
+  .page-shell-client-home .recommendation-rail {
+    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .page-shell-client-home .recommendation-card img {
+    aspect-ratio: 1;
+  }
+
+  .page-shell-client-home .client-insight-card {
+    grid-column: 1;
+  }
+}
+
+@media (min-width: 1120px) {
+  .desktop-hero-content h1 {
+    font-size: 4.8rem;
+  }
+}

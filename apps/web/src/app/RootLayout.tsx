@@ -54,8 +54,12 @@ export function RootLayout() {
   const session = useAuthSession();
   const location = useLocation();
   const navigate = useNavigate();
+  const shellRole = session?.user.role ?? "guest";
   const navItems = getNavItems(session?.user.role);
   const homePath = getHomePathForRole(session?.user.role);
+  const isClientHome =
+    location.pathname === routes.events &&
+    (!session || session.user.role === "customer");
   const shouldHideMobileTabbar =
     location.pathname === routes.login ||
     location.pathname === routes.register ||
@@ -73,7 +77,7 @@ export function RootLayout() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell app-shell-${shellRole}`}>
       <header className="topbar">
         <NavLink to={homePath} className="brand" aria-label="Elite Events">
           <span className="brand-mark">E</span>
@@ -109,7 +113,11 @@ export function RootLayout() {
         </nav>
       </header>
 
-      <main className={`page-shell ${shouldHideMobileTabbar ? "page-shell-immersive" : ""}`}>
+      <main
+        className={`page-shell ${
+          shouldHideMobileTabbar ? "page-shell-immersive" : ""
+        } ${isClientHome ? "page-shell-client-home" : ""}`.trim()}
+      >
         <Outlet />
       </main>
 

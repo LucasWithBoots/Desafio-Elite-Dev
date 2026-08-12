@@ -73,6 +73,11 @@ export function EventsPage() {
   return (
     <section className="client-home">
       <header className="client-hero">
+        {featuredEvent?.imageUrl ? (
+          <img className="client-hero-image" src={featuredEvent.imageUrl} alt="" />
+        ) : null}
+        <div className="client-hero-shade" aria-hidden="true" />
+
         <div className="client-location">
           <MapPin size={16} aria-hidden="true" />
           <span>Sao Paulo</span>
@@ -99,21 +104,42 @@ export function EventsPage() {
               : "Explore eventos interessantes perto de voce"}
           </strong>
         </div>
+
+        {featuredEvent ? (
+          <div className="desktop-hero-content">
+            <span className="featured-price">
+              {formatCurrency(featuredEvent.price, featuredEvent.currency)}
+            </span>
+            <h1>{featuredEvent.title}</h1>
+            <p>{getHeroDescription(featuredEvent.description, featuredEvent.about)}</p>
+            <div className="desktop-hero-actions">
+              <Link className="button button-primary" to={eventDetailsPath(featuredEvent.id)}>
+                Ver evento
+              </Link>
+              <Link className="button button-secondary" to={routes.search}>
+                Buscar eventos
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </header>
 
-      <div className="category-rail" aria-label="Categorias de eventos">
-        {categories.map((category) => (
-          <button
-            className={`category-chip ${
-              selectedCategory === category ? "category-chip-active" : ""
-            }`}
-            key={category}
-            type="button"
-            onClick={() => setSelectedCategory(category)}
-          >
-            {getEventCategoryLabel(category)}
-          </button>
-        ))}
+      <div className="home-filter-panel">
+        <span className="home-filter-title">Filtros</span>
+        <div className="category-rail" aria-label="Categorias de eventos">
+          {categories.map((category) => (
+            <button
+              className={`category-chip ${
+                selectedCategory === category ? "category-chip-active" : ""
+              }`}
+              key={category}
+              type="button"
+              onClick={() => setSelectedCategory(category)}
+            >
+              {getEventCategoryLabel(category)}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="client-main-grid">
@@ -264,6 +290,14 @@ export function EventsPage() {
 
 function getFirstName(name?: string) {
   return name?.trim().split(/\s+/)[0];
+}
+
+function getHeroDescription(description?: string, about?: string) {
+  return (
+    description?.trim() ||
+    about?.trim() ||
+    "Uma curadoria de eventos para voce descobrir, salvar e comprar ingresso com praticidade."
+  );
 }
 
 function getDay(value: string) {
