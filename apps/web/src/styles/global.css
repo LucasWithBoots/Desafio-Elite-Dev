@@ -566,14 +566,15 @@ p {
 .client-hero {
   background: #dfff00;
   border-radius: 0 0 var(--header-radius) var(--header-radius);
+  column-gap: 20px;
   display: grid;
-  gap: 14px;
   grid-template-areas:
-    "location notification"
-    "avatar greeting";
-  grid-template-columns: auto 1fr;
+    "location location notification"
+    "avatar greeting greeting";
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   margin: 0 -14px;
   padding: 18px 20px 22px;
+  row-gap: 14px;
 }
 
 .client-location {
@@ -605,6 +606,7 @@ p {
   grid-area: avatar;
   height: 48px;
   justify-content: center;
+  justify-self: start;
   width: 48px;
 }
 
@@ -1451,17 +1453,27 @@ button.app-primary-action {
   max-width: 468px;
   min-height: calc(100vh - 104px);
   padding: 0 0 18px;
+  position: relative;
 }
 
 .event-detail-topbar {
   align-items: center;
-  background: var(--lime);
-  border-radius: 0 0 var(--header-radius) var(--header-radius);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  backdrop-filter: blur(18px) saturate(145%);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  box-shadow: 0 16px 34px rgba(20, 22, 17, 0.18);
   display: grid;
-  gap: 10px;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
-  min-height: 74px;
-  padding: calc(14px + env(safe-area-inset-top)) 10px 12px;
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  left: 12px;
+  min-height: 54px;
+  padding: 8px;
+  position: absolute;
+  right: 12px;
+  top: calc(12px + env(safe-area-inset-top));
+  z-index: 5;
 }
 
 .event-detail-topbar > strong {
@@ -1470,14 +1482,15 @@ button.app-primary-action {
   font-weight: 950;
   line-height: 1;
   overflow: hidden;
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.72);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .event-detail-topbar .round-action {
-  background: rgba(255, 255, 255, 0.72);
-  height: 36px;
-  width: 36px;
+  background: rgba(255, 255, 255, 0.76);
+  height: 38px;
+  width: 38px;
 }
 
 .event-detail-topbar-actions {
@@ -1516,7 +1529,11 @@ button.app-primary-action {
 .event-detail-media-fallback {
   align-items: center;
   background:
-    radial-gradient(circle at 78% 16%, rgba(239, 123, 232, 0.5), transparent 120px),
+    radial-gradient(
+      circle at 78% 16%,
+      rgba(239, 123, 232, 0.5),
+      transparent 120px
+    ),
     linear-gradient(135deg, var(--blue), #151711 72%);
   color: var(--lime);
   display: grid;
@@ -1936,10 +1953,9 @@ button.app-primary-action {
   border-bottom: 1px solid var(--line);
   display: grid;
   gap: 7px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.58fr) minmax(
-      0,
-      0.78fr
-    ) minmax(0, 1fr) 32px;
+  grid-template-columns:
+    minmax(0, 0.9fr) minmax(0, 0.58fr) minmax(0, 0.78fr)
+    minmax(0, 1fr) 32px;
   min-height: 52px;
   padding: 7px 0;
 }
@@ -3129,8 +3145,16 @@ button.app-primary-action {
 .auth-visual-screen {
   align-content: end;
   background:
-    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.42), transparent 120px),
-    radial-gradient(circle at 84% 18%, rgba(223, 255, 0, 0.28), transparent 142px),
+    radial-gradient(
+      circle at 18% 8%,
+      rgba(255, 255, 255, 0.42),
+      transparent 120px
+    ),
+    radial-gradient(
+      circle at 84% 18%,
+      rgba(223, 255, 0, 0.28),
+      transparent 142px
+    ),
     linear-gradient(180deg, #ff68b6 0%, #fa72d4 48%, #d66dff 100%);
   display: grid;
   gap: 8px;
@@ -3264,8 +3288,9 @@ button.app-primary-action {
 .auth-panel-heading h1 {
   font-size: 1.86rem;
   line-height: 1.03;
-  max-width: 16rem;
+  max-width: 22rem;
   text-wrap: balance;
+  width: 100%;
 }
 
 .auth-panel-heading p {
@@ -3273,8 +3298,9 @@ button.app-primary-action {
   font-size: 0.95rem;
   font-weight: 750;
   line-height: 1.38;
-  max-width: 18rem;
+  max-width: 24rem;
   text-wrap: balance;
+  width: 100%;
 }
 
 .auth-carousel-indicator {
@@ -3654,7 +3680,7 @@ button.app-primary-action {
   }
 
   .event-detail-topbar {
-    border-radius: 0 0 var(--header-radius) var(--header-radius);
+    border-radius: 999px;
   }
 
   .event-detail-media {
@@ -3740,4 +3766,3 @@ button.app-primary-action {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-
