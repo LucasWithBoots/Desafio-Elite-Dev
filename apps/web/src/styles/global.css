@@ -4140,19 +4140,51 @@ button.app-primary-action {
 
   .event-detail-screen {
     background: #ffffff;
-    grid-template-columns: 1fr;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 468px;
-    padding: 0;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 0 64px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 48px;
+    align-items: start;
   }
 
   .event-detail-topbar {
-    border-radius: 999px;
+    display: none;
+  }
+
+  .event-detail-topbar-desktop {
   }
 
   .event-detail-media {
-    min-height: 320px;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 480px;
+    height: 100%;
+    box-shadow: 0 16px 32px rgba(33, 31, 28, 0.06);
+  }
+
+  .event-detail-content {
+    padding: 0;
+    gap: 32px;
+  }
+
+  .event-detail-intro h1 {
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+  }
+
+  .event-about-section p {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .event-detail-buy-button {
+    padding: 18px 24px;
+    font-size: 1.1rem;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
   }
 
   .app-content {
