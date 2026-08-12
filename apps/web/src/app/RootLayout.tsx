@@ -77,7 +77,7 @@ export function RootLayout() {
   }
 
   return (
-    <div className={`app-shell app-shell-${shellRole}`}>
+    <div className={`app-shell app-shell-customer`}>
       <header className="topbar">
         <NavLink to={homePath} className="brand" aria-label="Elite Events">
           <span className="brand-mark">E</span>
@@ -93,23 +93,27 @@ export function RootLayout() {
             const exactMatch = item.to === routes.organizerDashboard;
 
             return (
-              <NavLink key={item.to} to={item.to} end={exactMatch} className="nav-link">
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={exactMatch}
+                className="nav-link"
+              >
                 <Icon size={18} aria-hidden="true" />
                 <span>{item.label}</span>
               </NavLink>
             );
           })}
           {session ? (
-            <button className="nav-link nav-action-button" type="button" onClick={handleLogout}>
+            <button
+              className="nav-link nav-action-button"
+              type="button"
+              onClick={handleLogout}
+            >
               <LogOut size={18} aria-hidden="true" />
               <span>Sair</span>
             </button>
-          ) : (
-            <NavLink to={routes.login} className="nav-link">
-              <UserRound size={18} aria-hidden="true" />
-              <span>Entrar</span>
-            </NavLink>
-          )}
+          ) : null}
         </nav>
       </header>
 

@@ -5,6 +5,7 @@ import {
   Check,
   CreditCard,
   MapPin,
+  Ticket,
   Trash2,
   X,
 } from "lucide-react";
@@ -56,7 +57,8 @@ export function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("approved");
   const [feedback, setFeedback] = useState<string | null>(null);
   const { data: event, isLoading: isEventLoading } = useEvent(eventId);
-  const { data: seats = [], isLoading: isSeatsLoading } = useEventSeats(eventId);
+  const { data: seats = [], isLoading: isSeatsLoading } =
+    useEventSeats(eventId);
 
   const isSeatMap = event?.seatingMode === "seat-map";
   const selectedSeats = useMemo(
@@ -126,12 +128,16 @@ export function CheckoutPage() {
     },
     onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["events"] });
-      await queryClient.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["events", eventId, "seats"],
+      });
       await queryClient.invalidateQueries({ queryKey: ["tickets"] });
 
       if (!result.approved) {
         setSelectedSeatIds([]);
-        setFeedback("Pagamento negado. A reserva foi cancelada e os ingressos voltaram a ficar disponiveis.");
+        setFeedback(
+          "Pagamento negado. A reserva foi cancelada e os ingressos voltaram a ficar disponiveis.",
+        );
         return;
       }
 
@@ -142,7 +148,11 @@ export function CheckoutPage() {
       });
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : "Nao foi possivel finalizar a compra.");
+      setFeedback(
+        error instanceof Error
+          ? error.message
+          : "Nao foi possivel finalizar a compra.",
+      );
     },
   });
 
@@ -192,24 +202,60 @@ export function CheckoutPage() {
   return (
     <section className="app-screen checkout-screen checkout-flow-screen">
       <header className="checkout-mobile-header">
-        <button className="round-action" type="button" onClick={handleBack} aria-label="Voltar">
+        <button
+          className="round-action"
+          type="button"
+          onClick={handleBack}
+          aria-label="Voltar"
+        >
           <ArrowLeft size={18} aria-hidden="true" />
         </button>
-        <strong>{step === "seats" ? getSectionLabel(currentEvent.venueName) : "Checkout"}</strong>
-        <Link className="round-action" to={eventDetailsPath(currentEvent.id)} aria-label="Fechar">
+        <strong>
+          {step === "seats"
+            ? getSectionLabel(currentEvent.venueName)
+            : "Checkout"}
+        </strong>
+        <Link
+          className="round-action"
+          to={eventDetailsPath(currentEvent.id)}
+          aria-label="Fechar"
+        >
           <X size={18} aria-hidden="true" />
         </Link>
       </header>
 
+      <div className="checkout-mobile-big-cover">
+        {step === "seats" ? (
+          <div className="event-detail-media">
+            {event.imageUrl ? (
+              <img src={event.imageUrl} alt="" />
+            ) : (
+              <div className="event-detail-media-fallback" aria-hidden="true">
+                <Ticket size={52} />
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
+
       {step === "seats" ? (
         <>
           {isSeatMap ? (
-            <section className="seat-selection-panel" aria-labelledby="seat-selection-title">
+            <section
+              className="seat-selection-panel"
+              aria-labelledby="seat-selection-title"
+            >
               <h1 id="seat-selection-title">Escolha seus assentos</h1>
               <div className="seat-legend" aria-label="Legenda dos assentos">
-                <span><i className="legend-selected" /> Selecionado</span>
-                <span><i className="legend-available" /> Disponivel</span>
-                <span><i className="legend-occupied" /> Ocupado</span>
+                <span>
+                  <i className="legend-selected" /> Selecionado
+                </span>
+                <span>
+                  <i className="legend-available" /> Disponivel
+                </span>
+                <span>
+                  <i className="legend-occupied" /> Ocupado
+                </span>
               </div>
 
               <div className="seat-map-board">
@@ -222,7 +268,8 @@ export function CheckoutPage() {
                   >
                     <span className="seat-row-label">{row}</span>
                     {rowSeats.map((seat) => {
-                      const occupied = seat.status === "sold" || seat.status === "reserved";
+                      const occupied =
+                        seat.status === "sold" || seat.status === "reserved";
                       const selected = selectedSeatIds.includes(seat.id);
 
                       return (
@@ -246,12 +293,20 @@ export function CheckoutPage() {
               </div>
             </section>
           ) : (
-            <section className="seat-selection-panel" aria-labelledby="seat-selection-title">
+            <section
+              className="seat-selection-panel"
+              aria-labelledby="seat-selection-title"
+            >
               <h1 id="seat-selection-title">Escolha a quantidade</h1>
-              <div className="quantity-picker checkout-quantity-picker" aria-label="Quantidade de ingressos">
+              <div
+                className="quantity-picker checkout-quantity-picker"
+                aria-label="Quantidade de ingressos"
+              >
                 <button
                   type="button"
-                  onClick={() => setQuantity((current) => Math.max(current - 1, 1))}
+                  onClick={() =>
+                    setQuantity((current) => Math.max(current - 1, 1))
+                  }
                 >
                   -
                 </button>
@@ -259,7 +314,9 @@ export function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    setQuantity((current) => Math.min(current + 1, currentEvent.availableTickets))
+                    setQuantity((current) =>
+                      Math.min(current + 1, currentEvent.availableTickets),
+                    )
                   }
                   disabled={quantity >= currentEvent.availableTickets}
                 >
@@ -295,7 +352,9 @@ export function CheckoutPage() {
       ) : (
         <>
           <section className="checkout-event-summary">
-            {currentEvent.imageUrl ? <img src={currentEvent.imageUrl} alt="" /> : null}
+            {currentEvent.imageUrl ? (
+              <img src={currentEvent.imageUrl} alt="" />
+            ) : null}
             <div>
               <strong>{currentEvent.title}</strong>
               <span>{currentEvent.venueName}</span>
@@ -311,19 +370,33 @@ export function CheckoutPage() {
             onRemoveSeat={removeSeat}
           />
 
-          <section className="checkout-personal-info" aria-labelledby="personal-info-title">
+          <section
+            className="checkout-personal-info"
+            aria-labelledby="personal-info-title"
+          >
             <h2 id="personal-info-title">Informacoes pessoais</h2>
             <label className="checkout-readonly-field">
               Nome completo
-              <input readOnly aria-readonly="true" value={session?.user.name ?? ""} />
+              <input
+                readOnly
+                aria-readonly="true"
+                value={session?.user.name ?? ""}
+              />
             </label>
             <label className="checkout-readonly-field">
               Email
-              <input readOnly aria-readonly="true" value={session?.user.email ?? ""} />
+              <input
+                readOnly
+                aria-readonly="true"
+                value={session?.user.email ?? ""}
+              />
             </label>
           </section>
 
-          <section className="checkout-payment-methods" aria-labelledby="payment-title">
+          <section
+            className="checkout-payment-methods"
+            aria-labelledby="payment-title"
+          >
             <h2 id="payment-title">Escolha seu metodo de pagamento</h2>
             {paymentMethods.map((method) => {
               const Icon = method.icon;
@@ -358,11 +431,15 @@ export function CheckoutPage() {
               disabled={!canContinue || paymentMutation.isPending}
               onClick={() => paymentMutation.mutate()}
             >
-              {paymentMutation.isPending ? "Processando..." : "Simular pagamento"}
+              {paymentMutation.isPending
+                ? "Processando..."
+                : "Simular pagamento"}
             </button>
           </div>
 
-          {feedback ? <p className="form-feedback checkout-feedback">{feedback}</p> : null}
+          {feedback ? (
+            <p className="form-feedback checkout-feedback">{feedback}</p>
+          ) : null}
         </>
       )}
     </section>
@@ -384,10 +461,15 @@ function TicketSelectionSummary({
   ticketCount,
   onRemoveSeat,
 }: TicketSelectionSummaryProps) {
-  const generalAdmissionRows = Array.from({ length: selectedSeats.length ? 0 : ticketCount });
+  const generalAdmissionRows = Array.from({
+    length: selectedSeats.length ? 0 : ticketCount,
+  });
 
   return (
-    <section className="selected-ticket-panel" aria-labelledby="selected-ticket-title">
+    <section
+      className="selected-ticket-panel"
+      aria-labelledby="selected-ticket-title"
+    >
       <h2 id="selected-ticket-title">Seus ingressos</h2>
       <div className="selected-ticket-list">
         {selectedSeats.map((seat) => (
@@ -408,14 +490,21 @@ function TicketSelectionSummary({
               <small>Valor</small>
               {formatCurrency(price, currency)}
             </span>
-            <button type="button" aria-label={`Remover assento ${seat.label}`} onClick={() => onRemoveSeat(seat.id)}>
+            <button
+              type="button"
+              aria-label={`Remover assento ${seat.label}`}
+              onClick={() => onRemoveSeat(seat.id)}
+            >
               <Trash2 size={15} aria-hidden="true" />
             </button>
           </article>
         ))}
 
         {generalAdmissionRows.map((_, index) => (
-          <article className="selected-ticket-row selected-ticket-row-general" key={index}>
+          <article
+            className="selected-ticket-row selected-ticket-row-general"
+            key={index}
+          >
             <span>
               <small>Tipo</small>
               Entrada
@@ -447,7 +536,9 @@ function groupSeatsByRow(seats: Seat[]) {
       row,
       seats: rowSeats.sort(compareSeats),
     }))
-    .sort((first, second) => first.row.localeCompare(second.row, "pt-BR", { numeric: true }));
+    .sort((first, second) =>
+      first.row.localeCompare(second.row, "pt-BR", { numeric: true }),
+    );
 }
 
 function compareSeats(first: Seat, second: Seat) {

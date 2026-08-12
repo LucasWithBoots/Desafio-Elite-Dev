@@ -2884,6 +2884,10 @@ button.app-primary-action {
   position: absolute;
 }
 
+.checkout-mobile-big-cover {
+  display: none;
+}
+
 .ticket-pass-cover-fallback {
   align-items: center;
   background:
@@ -4580,6 +4584,14 @@ button.app-primary-action {
 
   .page-shell-client-home .client-insight-card {
     grid-column: 1;
+  }
+
+  .checkout-mobile-header {
+    display: none;
+  }
+
+  .checkout-mobile-big-cover {
+    display: block;
   }
 }
 
