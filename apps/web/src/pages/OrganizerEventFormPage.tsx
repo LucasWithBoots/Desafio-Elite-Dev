@@ -95,18 +95,22 @@ export function OrganizerEventFormPage() {
 
   return (
     <section className="app-screen organizer-form-screen">
-      <header className="blue-page-header">
-        <span className="eyebrow">Organizador</span>
+      <header className="lime-page-header organizer-hero">
         <h1>Criar evento</h1>
         <p>Busque na Ticketmaster ou crie manualmente quando o catalogo nao resolver.</p>
       </header>
 
       <div className="form-layout">
-        <section className="panel catalog-panel">
-          <span className="panel-icon">
-            <Search size={20} aria-hidden="true" />
-          </span>
-          <h2>Buscar no catalogo</h2>
+        <section className="panel catalog-panel organizer-card">
+          <div className="organizer-card-heading">
+            <span className="panel-icon">
+              <Search size={20} aria-hidden="true" />
+            </span>
+            <div>
+              <span className="app-pill app-pill-pink">API externa</span>
+              <h2>Buscar no catalogo</h2>
+            </div>
+          </div>
           <form className="stacked-form" onSubmit={handleCatalogSearch}>
             <Input
               label="Nome do evento"
@@ -150,12 +154,17 @@ export function OrganizerEventFormPage() {
           ) : null}
         </section>
 
-        <section className="panel manual-event-panel">
-          <span className="panel-icon">
-            <ImagePlus size={20} aria-hidden="true" />
-          </span>
-          <h2>Criar manualmente</h2>
-          <form className="stacked-form" onSubmit={handleManualSubmit}>
+        <section className="panel manual-event-panel organizer-card">
+          <div className="organizer-card-heading">
+            <span className="panel-icon">
+              <ImagePlus size={20} aria-hidden="true" />
+            </span>
+            <div>
+              <span className="app-pill">Rascunho</span>
+              <h2>Criar manualmente</h2>
+            </div>
+          </div>
+          <form className="stacked-form organizer-manual-form" onSubmit={handleManualSubmit}>
             <Input label="Titulo" name="title" placeholder="Nome do evento" required />
             <Input label="Descricao curta" name="description" placeholder="Resumo para cards" />
             <Input label="Sobre" name="about" placeholder="Descricao maior do evento" />

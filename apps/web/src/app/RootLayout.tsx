@@ -41,8 +41,8 @@ const customerMobileNavItems: NavItem[] = [
 
 const organizerNavItems: NavItem[] = [
   { to: routes.organizerDashboard, label: "Home", icon: Home },
-  { to: routes.profile, label: "Perfil", icon: UserRound },
   { to: routes.organizerNewEvent, label: "Criar evento", icon: PlusCircle },
+  { to: routes.profile, label: "Perfil", icon: UserRound },
 ];
 
 const gateNavItems: NavItem[] = [

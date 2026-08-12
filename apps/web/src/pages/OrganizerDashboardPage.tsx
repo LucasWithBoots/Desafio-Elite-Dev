@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BadgeCheck, CalendarDays, Plus, Ticket, TrendingUp } from "lucide-react";
+import { BadgeCheck, CalendarDays, Ticket, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { eventManagementService } from "@/features/event-management/services/eventManagementService";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -52,18 +52,6 @@ export function OrganizerDashboardPage() {
 
   return (
     <section className="app-screen organizer-screen">
-      <header className="blue-page-header">
-        <div>
-          <span className="eyebrow">Organizador</span>
-          <h1>Perfil do organizador</h1>
-          <p>Veja seus eventos, acompanhe disponibilidade e crie novas publicacoes.</p>
-        </div>
-        <Link className="button button-primary" to={routes.organizerNewEvent}>
-          <Plus size={18} aria-hidden="true" />
-          Novo evento
-        </Link>
-      </header>
-
       <div className="metric-grid">
         <article className="metric-card">
           <CalendarDays size={20} aria-hidden="true" />
@@ -86,7 +74,9 @@ export function OrganizerDashboardPage() {
         {events?.map((event) => (
           <article className="organizer-event-row" key={event.id}>
             <div>
-              <span className="app-pill">{getStatusLabel(event.status)}</span>
+              <span className={`app-pill ${getStatusPillClass(event.status)}`}>
+                {getStatusLabel(event.status)}
+              </span>
               <strong>{event.title}</strong>
               <p>
                 {event.availableTickets}/{event.capacity} lugares disponiveis
@@ -109,6 +99,18 @@ export function OrganizerDashboardPage() {
       </div>
     </section>
   );
+}
+
+function getStatusPillClass(status: string) {
+  if (status === "draft") {
+    return "app-pill-pink";
+  }
+
+  if (status === "published") {
+    return "";
+  }
+
+  return "app-pill-blue";
 }
 
 function getStatusLabel(status: string) {
