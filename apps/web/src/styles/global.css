@@ -2296,54 +2296,13 @@ button.app-primary-action {
 }
 
 .checkout-success-heart {
-  background: linear-gradient(135deg, #e7ff28 0%, #dfff00 48%, #a8c900 100%);
-  border-radius: 22px 22px 12px 22px;
-  box-shadow:
-    0 28px 44px rgba(158, 192, 0, 0.32),
-    inset -16px -18px 24px rgba(120, 150, 0, 0.28),
-    inset 14px 14px 24px rgba(255, 255, 190, 0.82);
-  height: 94px;
-  margin-top: 48px;
+  filter: drop-shadow(0 22px 24px rgba(158, 192, 0, 0.28));
+  height: auto;
+  margin-top: 32px;
+  object-fit: contain;
   position: relative;
-  transform: rotate(-45deg);
-  width: 94px;
-}
-
-.checkout-success-heart::before,
-.checkout-success-heart::after {
-  background: inherit;
-  border-radius: 50%;
-  content: "";
-  height: 94px;
-  position: absolute;
-  width: 94px;
-}
-
-.checkout-success-heart::before {
-  left: 0;
-  top: -47px;
-}
-
-.checkout-success-heart::after {
-  left: 47px;
-  top: 0;
-}
-
-.checkout-success-heart span {
-  background: radial-gradient(
-    circle at 30% 25%,
-    rgba(255, 255, 255, 0.72),
-    transparent 42%
-  );
-  border-radius: 50%;
-  filter: blur(1px);
-  height: 62px;
-  left: 12px;
-  position: absolute;
-  top: -31px;
-  transform: rotate(45deg);
-  width: 62px;
-  z-index: 2;
+  width: clamp(132px, 40vw, 168px);
+  z-index: 1;
 }
 
 .checkout-success-copy {

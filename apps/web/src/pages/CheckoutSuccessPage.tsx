@@ -1,5 +1,6 @@
 import { ArrowLeft, Ticket } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import heartImage from "@/assets/heart.png";
 import { routes } from "@/shared/constants/routes";
 
 interface CheckoutSuccessState {
@@ -23,9 +24,12 @@ export function CheckoutSuccessPage() {
           ))}
         </div>
 
-        <div className="checkout-success-heart" aria-hidden="true">
-          <span />
-        </div>
+        <img
+          className="checkout-success-heart"
+          src={heartImage}
+          alt=""
+          aria-hidden="true"
+        />
 
         <div className="checkout-success-copy">
           <h1 id="checkout-success-title">Pagamento aprovado!</h1>
