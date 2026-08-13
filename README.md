@@ -87,7 +87,7 @@ As definições de atores, Jobs to Be Done, jornada, fluxos, protótipos, identi
 
 ## Limitações Conhecidas
 
-- A leitura de QR usa a câmera pelo ZXing e mantém envio de imagem, colagem e digitação manual como alternativas. A câmera exige HTTPS ou `localhost`, [conforme as regras dos navegadores](https://www.npmjs.com/package/@zxing/library).
+- A leitura de QR usa a câmera pelo ZXing e mantém envio de imagem, colagem e digitação manual como alternativas. A câmera exige HTTPS ou `localhost`, [conforme as regras dos navegadores](https://github.com/zxing-js/library#limitations).
 - O setup inicial usa `db:push`.
 
 ## Segurança Do Ingresso
