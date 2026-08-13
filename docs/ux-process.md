@@ -42,12 +42,10 @@ Os Jobs to Be Done foram utilizados para descrever o progresso que cada ator des
 
 Exemplos centrais:
 <img align="right" width="328" height="201" alt="image" src="https://github.com/user-attachments/assets/70a5b1cb-77c2-4b3b-8287-aa59d526f60c" />
+
 - Quando quero publicar um evento que existe em um catálogo externo, quero importar seus dados para reduzir o preenchimento manual.
-- Quando quero participar de um evento, quero entender as opções disponíveis e concluir a compra com segurança. 
+- Quando quero participar de um evento, quero entender as opções disponíveis e concluir a compra com segurança.
 - Quando recebo um participante, quero validar rapidamente o ingresso para permitir ou negar a entrada com confiança.
-
-
-
 
 A lista completa está em [Notas de produto](product-notes.md#jobs-to-be-done).
 
@@ -100,6 +98,18 @@ Durante a implementação, foram refinados:
 - Feedback de pagamento e validação.
 - Adaptação entre mobile e desktop.
 - Alternativas para leitura do ingresso no computador.
+
+## Colaboração Com IA
+
+A IA foi utilizada como apoio para organizar hipóteses, consolidar o user flow, revisar decisões e acelerar partes da implementação. Os artefatos iniciais, as prioridades e os critérios de aceite foram definidos por mim, e as sugestões foram avaliadas e ajustadas de acordo com o produto.
+
+Uma sugestão da IA não era considerada pronta apenas por ter sido gerada. Ela precisava:
+
+- Fazer sentido para o fluxo do produto.
+- Respeitar a arquitetura e os componentes existentes.
+- Ser compreendida antes de permanecer no código.
+- Ser testada no navegador ou no back-end.
+- Ser corrigida quando não atendesse ao comportamento esperado.
 
 ## Aprendizados E Limitações
 
