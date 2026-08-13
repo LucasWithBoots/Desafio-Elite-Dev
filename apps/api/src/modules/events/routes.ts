@@ -12,14 +12,29 @@ import { badRequest, notFound } from "../../shared/http-error.js";
 import { requireAuthSession, requireRoles } from "../auth/session.js";
 import { toEventDto, toSeatDto } from "./mappers.js";
 
-const listEventsQuerySchema = z.object({
-  search: z.string().optional(),
-  city: z.string().optional(),
-  category: z.string().optional(),
-  status: z
-    .enum(["draft", "published", "sold-out", "cancelled", "finished"])
-    .optional(),
-});
+const listEventsQuerySchema = z
+  .object({
+    search: z.string().optional(),
+    city: z.string().optional(),
+    category: z.string().optional(),
+    dateFrom: z.coerce.date().optional(),
+    dateTo: z.coerce.date().optional(),
+    minPrice: z.coerce.number().nonnegative().optional(),
+    maxPrice: z.coerce.number().nonnegative().optional(),
+    seatingMode: z.enum(["seat-map", "general-admission"]).optional(),
+    status: z
+      .enum(["draft", "published", "sold-out", "cancelled", "finished"])
+      .optional(),
+  })
+  .refine(
+    ({ dateFrom, dateTo }) => !dateFrom || !dateTo || dateFrom <= dateTo,
+    { message: "dateFrom must be before dateTo" },
+  )
+  .refine(
+    ({ minPrice, maxPrice }) =>
+      minPrice === undefined || maxPrice === undefined || minPrice <= maxPrice,
+    { message: "minPrice must not exceed maxPrice" },
+  );
 
 const createEventBodySchema = z.object({
   source: z.enum(["manual", "ticketmaster"]).default("manual"),
@@ -130,6 +145,24 @@ function buildSearchWhere(
 
   if (query.category) {
     where.category = { equals: query.category, mode: "insensitive" };
+  }
+
+  if (query.dateFrom || query.dateTo) {
+    where.startsAt = {
+      ...(query.dateFrom ? { gte: query.dateFrom } : {}),
+      ...(query.dateTo ? { lte: query.dateTo } : {}),
+    };
+  }
+
+  if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+    where.priceCents = {
+      ...(query.minPrice !== undefined ? { gte: toCents(query.minPrice) } : {}),
+      ...(query.maxPrice !== undefined ? { lte: toCents(query.maxPrice) } : {}),
+    };
+  }
+
+  if (query.seatingMode) {
+    where.seatingMode = seatingModeMap[query.seatingMode];
   }
 
   return where;

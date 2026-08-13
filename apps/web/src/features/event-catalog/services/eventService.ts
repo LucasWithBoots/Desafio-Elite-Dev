@@ -1,4 +1,4 @@
-import type { Event } from "@/entities/event/model";
+import type { Event, SeatingMode } from "@/entities/event/model";
 import type { Seat } from "@/entities/seat/model";
 import { httpClient } from "@/shared/api/http-client";
 
@@ -6,6 +6,11 @@ export interface ListEventsFilters {
   search?: string;
   city?: string;
   category?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  seatingMode?: SeatingMode;
 }
 
 function toQueryString(filters?: ListEventsFilters) {
@@ -21,6 +26,26 @@ function toQueryString(filters?: ListEventsFilters) {
 
   if (filters?.category && filters.category !== "All") {
     searchParams.set("category", filters.category);
+  }
+
+  if (filters?.dateFrom) {
+    searchParams.set("dateFrom", filters.dateFrom);
+  }
+
+  if (filters?.dateTo) {
+    searchParams.set("dateTo", filters.dateTo);
+  }
+
+  if (typeof filters?.minPrice === "number") {
+    searchParams.set("minPrice", filters.minPrice.toString());
+  }
+
+  if (typeof filters?.maxPrice === "number") {
+    searchParams.set("maxPrice", filters.maxPrice.toString());
+  }
+
+  if (filters?.seatingMode) {
+    searchParams.set("seatingMode", filters.seatingMode);
   }
 
   const queryString = searchParams.toString();
