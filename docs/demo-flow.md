@@ -21,8 +21,8 @@ Este roteiro existe para que avaliadores consigam testar o fluxo principal sem m
 6. Simular pagamento aprovado.
 7. Ver ingresso gerado com QR Code.
 8. Copiar link compartilhável.
-
-<img width="383" height="758" alt="gif5" src="https://github.com/user-attachments/assets/d1253d21-1def-472d-941c-cb74f882146e" />
+   
+<img width="381" height="751" alt="gif7" src="https://github.com/user-attachments/assets/f590105f-759f-490f-b5bf-0301badb3f21" />
 
 ## 3. Pagamento Recusado
 
