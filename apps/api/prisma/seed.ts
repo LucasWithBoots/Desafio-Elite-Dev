@@ -9,7 +9,10 @@ import {
   UserRole,
 } from "@prisma/client";
 import { hashPassword } from "../src/modules/auth/password.js";
-import { hashTicketPayload } from "../src/modules/tickets/codes.js";
+import {
+  createTicketPayload,
+  hashTicketPayload,
+} from "../src/modules/tickets/codes.js";
 
 const prisma = new PrismaClient();
 
@@ -232,7 +235,11 @@ async function main() {
   });
 
   const demoSeatId = makeSeatId("evt_rock-night", "A", 1);
-  const demoTicketPayload = "ELITE:TICKET:tck_demo:evt_rock-night:usr_customer_demo";
+  const demoTicketPayload = createTicketPayload(
+    "tck_demo",
+    "evt_rock-night",
+    "usr_customer_demo",
+  );
 
   await prisma.seat.update({
     where: { id: demoSeatId },

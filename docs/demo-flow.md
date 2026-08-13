@@ -29,7 +29,7 @@ Este roteiro existe para que avaliadores consigam testar o fluxo principal sem m
 ## 4. Portaria
 
 1. Entrar como `portaria@elite.dev`.
-2. Ler o QR Code ou digitar o codigo manualmente.
+2. Ler o QR Code pela camera, enviar uma imagem com o QR ou digitar o codigo manualmente.
 3. Validar ingresso correto.
 4. Tentar validar o mesmo ingresso novamente.
 5. Confirmar retorno de ingresso ja utilizado.
@@ -40,4 +40,4 @@ Este roteiro existe para que avaliadores consigam testar o fluxo principal sem m
 - Invalido
 - Ja utilizado
 - Evento errado
-- Camera indisponivel, com digitacao manual como alternativa
+- Camera indisponivel, com imagem, colagem ou digitacao manual como alternativas

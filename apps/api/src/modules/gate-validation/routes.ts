@@ -5,7 +5,11 @@ import { z } from "zod";
 import { prisma } from "../../infra/db/prisma.js";
 import { badRequest } from "../../shared/http-error.js";
 import { requireAuthSession, requireRoles } from "../auth/session.js";
-import { hashTicketPayload, normalizeManualTicketCode } from "../tickets/codes.js";
+import {
+  hashTicketPayload,
+  normalizeManualTicketCode,
+  verifyTicketPayload,
+} from "../tickets/codes.js";
 import { toTicketDto } from "../tickets/mappers.js";
 
 const validateTicketBodySchema = z.object({
@@ -52,6 +56,14 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
     }
 
     const ticketWhere = buildTicketWhere(parsedBody.data);
+
+    if (!ticketWhere) {
+      return {
+        status: "invalid",
+        message: "Ingresso invalido ou assinatura do QR Code incorreta.",
+      };
+    }
+
     const ticket = await prisma.ticket.findFirst({
       where: ticketWhere,
       include: ticketInclude,
@@ -106,12 +118,40 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
       };
     }
 
-    const validatedTicket = await prisma.ticket.update({
-      where: { id: ticket.id },
+    const validationTime = new Date();
+    const consumedTicket = await prisma.ticket.updateMany({
+      where: {
+        id: ticket.id,
+        status: TicketStatus.ACTIVE,
+      },
       data: {
         status: TicketStatus.USED,
-        validatedAt: new Date(),
+        validatedAt: validationTime,
       },
+    });
+
+    if (consumedTicket.count === 0) {
+      const currentTicket = await prisma.ticket.findUnique({
+        where: { id: ticket.id },
+        include: ticketInclude,
+      });
+
+      if (currentTicket?.status === TicketStatus.USED) {
+        return {
+          status: "already-used",
+          message: "Este ingresso ja foi lido na portaria.",
+          ticket: toTicketDto(currentTicket),
+        };
+      }
+
+      return {
+        status: "invalid",
+        message: "Ingresso cancelado ou indisponivel.",
+      };
+    }
+
+    const validatedTicket = await prisma.ticket.findUniqueOrThrow({
+      where: { id: ticket.id },
       include: ticketInclude,
     });
 
@@ -131,14 +171,22 @@ export async function registerGateValidationRoutes(server: FastifyInstance) {
 
 function buildTicketWhere(
   input: z.infer<typeof validateTicketBodySchema>,
-): Prisma.TicketWhereInput {
+): Prisma.TicketWhereInput | null {
   const conditions: Prisma.TicketWhereInput[] = [];
   const qrPayload = input.qrPayload?.trim();
   const manualCode = input.manualCode?.trim();
 
   if (qrPayload) {
-    conditions.push({ codeHash: hashTicketPayload(qrPayload) });
-    conditions.push({ qrPayload });
+    const claims = verifyTicketPayload(qrPayload);
+
+    if (claims) {
+      conditions.push({
+        id: claims.ticketId,
+        eventId: claims.eventId,
+        customerId: claims.customerId,
+        codeHash: hashTicketPayload(qrPayload),
+      });
+    }
 
     const shareSlug = extractShareSlug(qrPayload);
     if (shareSlug) {
@@ -150,7 +198,16 @@ function buildTicketWhere(
     const lowercaseManualCode = manualCode.toLowerCase();
 
     if (lowercaseManualCode.startsWith("elite:ticket:")) {
-      conditions.push({ codeHash: hashTicketPayload(manualCode) });
+      const claims = verifyTicketPayload(manualCode);
+
+      if (claims) {
+        conditions.push({
+          id: claims.ticketId,
+          eventId: claims.eventId,
+          customerId: claims.customerId,
+          codeHash: hashTicketPayload(manualCode),
+        });
+      }
     }
 
     if (lowercaseManualCode.startsWith("tck_")) {
@@ -171,7 +228,7 @@ function buildTicketWhere(
     }
   }
 
-  return { OR: conditions };
+  return conditions.length ? { OR: conditions } : null;
 }
 
 function extractShareSlug(value: string) {

@@ -27,7 +27,7 @@ A interface mostrara disponibilidade, mas a decisao final precisa acontecer no b
 
 ## QR Code Nao Pode Ser Forjado
 
-O QR nao deve conter apenas um ID previsivel. Ele deve conter um codigo assinado e validado no servidor.
+O QR nao contem apenas um ID previsivel. Ele carrega claims codificadas e uma assinatura HMAC criada com um segredo exclusivo do back-end. A portaria verifica a assinatura antes de localizar o ingresso e consome o status `ACTIVE` com uma atualizacao condicional atomica, evitando duas validacoes simultaneas.
 
 ## Fora Do Escopo Inicial
 

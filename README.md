@@ -70,5 +70,11 @@ Este projeto usa IA como apoio para organizacao, planejamento, geracao de esquel
 
 ## Limitacoes Conhecidas
 
-- A leitura de QR pela camera usa a API nativa do navegador quando disponivel e mantem digitacao manual como fallback.
+- A leitura de QR usa a camera pelo ZXing e mantem envio de imagem, colagem e digitacao manual como alternativas. A camera exige HTTPS ou `localhost`, conforme as regras dos navegadores.
 - O setup inicial usa `db:push`; migracoes versionadas podem ser adicionadas antes da entrega final.
+
+## Seguranca Do Ingresso
+
+- O QR Code carrega os dados do ingresso e uma assinatura HMAC gerada apenas pelo back-end.
+- A portaria rejeita qualquer payload cuja assinatura tenha sido alterada.
+- O consumo usa uma atualizacao condicional atomica, garantindo que apenas a primeira leitura de um ingresso ativo seja aprovada.

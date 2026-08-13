@@ -3138,36 +3138,67 @@ button.app-primary-action {
   display: grid;
   height: 220px;
   justify-content: center;
+  overflow: hidden;
   position: relative;
 }
 
-.scanner-frame span {
+.scanner-frame video {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.scanner-placeholder {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.scanner-placeholder span,
+.scanner-starting {
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.scanner-starting {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.scanner-corner {
   border-color: var(--lime);
   border-style: solid;
   height: 34px;
   position: absolute;
   width: 34px;
+  z-index: 1;
 }
 
-.scanner-frame span:nth-child(2) {
+.scanner-corner-top-left {
   border-width: 3px 0 0 3px;
   left: 18px;
   top: 18px;
 }
 
-.scanner-frame span:nth-child(3) {
+.scanner-corner-top-right {
   border-width: 3px 3px 0 0;
   right: 18px;
   top: 18px;
 }
 
-.scanner-frame span:nth-child(4) {
+.scanner-corner-bottom-left {
   border-width: 0 0 3px 3px;
   bottom: 18px;
   left: 18px;
 }
 
-.scanner-frame span:nth-child(5) {
+.scanner-corner-bottom-right {
   border-width: 0 3px 3px 0;
   bottom: 18px;
   right: 18px;
@@ -3224,6 +3255,44 @@ button.app-primary-action {
 .gate-code-form {
   display: grid;
   gap: 12px;
+}
+
+.gate-camera-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gate-camera-actions .button {
+  min-width: 0;
+  padding-inline: 12px;
+}
+
+.gate-image-button {
+  cursor: pointer;
+  position: relative;
+}
+
+.gate-image-button input {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.gate-image-button:focus-within {
+  box-shadow: 0 0 0 4px rgba(239, 123, 232, 0.2);
+  outline: 2px solid var(--pink);
+  outline-offset: 2px;
+}
+
+.gate-camera-feedback {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 750;
+  line-height: 1.4;
+  margin: -2px 2px 0;
 }
 
 .gate-code-field textarea {
