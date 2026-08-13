@@ -2,6 +2,8 @@
 
 Este arquivo registra as principais decisões de produto e tecnologia. A ideia é deixar visível como o projeto foi pensado, não apenas o que foi entregue.
 
+<img width="1280" height="832" alt="Mock Up" src="https://github.com/user-attachments/assets/828af10e-4768-4c38-b21f-51b9c590c37c" />
+
 ## Recorte Do MVP
 
 O MVP prioriza eventos com mapa de assentos, pagamento simulado, ingresso com QR Code assinado e validação pela portaria.
@@ -27,9 +29,13 @@ Motivo:
 
 A importação não publica nem finaliza o cadastro. Os dados externos preenchem o formulário de criação, no qual o organizador pode revisar, completar e editar as informações antes de salvar.
 
+<img width="383" height="764" alt="gif1" src="https://github.com/user-attachments/assets/3528999c-523f-4236-b90d-f82ebe154a0e" />
+
 ## Mobile First Com Contexto
 
 Cliente e portaria foram tratados como experiências mobile first, porque compra, exibição do QR e leitura pela câmera tendem a acontecer no celular ou tablet.
+
+<img width="383" height="764" alt="gif2" src="https://github.com/user-attachments/assets/cc76ddc9-34f4-421e-8d75-737da070e4fe" />
 
 A área do organizador é responsiva, com melhor aproveitamento de telas maiores para tarefas administrativas mais densas.
 
@@ -46,6 +52,8 @@ Carregamento, erro e lista vazia são tratados como estados da interface. Em aç
 ## Assento Não Pode Ser Vendido Duas Vezes
 
 A interface mostra disponibilidade, mas a decisão final acontece no back-end, com validação no servidor e garantia de consistência no banco.
+
+<img width="383" height="764" alt="gif3" src="https://github.com/user-attachments/assets/56bda0b9-1a03-4a07-a11b-40628d8f0f65" />
 
 ## QR Code Não Pode Ser Forjado
 
