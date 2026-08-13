@@ -71,6 +71,8 @@ Depois da jornada, foram criados fluxos separados para cliente, organizador e po
 
 Os fluxos completos estão em [Notas de produto](product-notes.md#user-flows).
 
+<img align="right" width="516" height="558" alt="image" src="https://github.com/user-attachments/assets/1d435ce3-7c89-41ff-97ac-cc5e53e05ee2" />
+
 ### 6. Protótipos De Baixa Fidelidade
 
 Os protótipos foram produzidos no Excalidraw para validar rapidamente:
@@ -83,8 +85,6 @@ Os protótipos foram produzidos no Excalidraw para validar rapidamente:
 - Estados essenciais das telas.
 
 A baixa fidelidade foi uma escolha intencional. Diante do prazo, o objetivo era responder perguntas de estrutura e fluxo antes de investir no acabamento visual.
-
-<img align="right" width="516" height="558" alt="image" src="https://github.com/user-attachments/assets/1d435ce3-7c89-41ff-97ac-cc5e53e05ee2" />
 
 ### 7. Implementação E Refinamento
 
