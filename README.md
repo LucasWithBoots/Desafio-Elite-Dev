@@ -1,8 +1,12 @@
 # Plataforma de Eventos e Ingressos
+<p align="center">
+ <img width="1920" height="1080" alt="Mock-up tela" src="https://github.com/user-attachments/assets/0859c2d9-1fd5-4fdc-b4ed-6ff15a475c7c" />
+</p>
 
 Projeto para o Desafio Elite Dev 2026. O objetivo e criar uma plataforma onde organizadores publicam eventos, clientes compram ingressos e a portaria valida a entrada com QR Code.
 
 ## Stack
+
 
 - Front-end: React, Vite e TypeScript
 - Back-end: Node.js, Fastify e TypeScript
